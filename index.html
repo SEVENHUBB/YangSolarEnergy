@@ -1,33 +1,238 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skyworth Solar Calculator</title>
+    <title>Yang Solar Energy - Kalkulator ICT</title>
     <style>
+        * { box-sizing: border-box; }
+
         body {
+            margin: 0;
+            padding: 24px 16px;
+            min-height: 100vh;
             font-family: Arial, sans-serif;
-            background: #f4f7fb;
-            text-align: center;
-            padding: 50px 20px;
+            background: #f2f7f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        h1 { color: #167a48; }
+
         .container {
+            width: 100%;
+            max-width: 460px;
+            padding: 32px 25px;
             background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 500px;
-            margin: auto;
-            box-shadow: 0 4px 15px #00000012;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px #00000012;
+        }
+
+        .logo {
+            font-size: 42px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #167b4a;
+            text-align: center;
+            font-size: 27px;
+            margin: 12px 0;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 18px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #16834e;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 18px;
+            background: #16834e;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover { background: #10683d; }
+
+        .result {
+            display: none;
+            margin-top: 25px;
+            padding: 22px;
+            background: #edf8f0;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .result-label {
+            font-size: 13px;
+            color: #555;
+            text-transform: uppercase;
+        }
+
+        .rate {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 10px 0 22px;
+        }
+
+        .amount {
+            font-size: 38px;
+            font-weight: bold;
+            color: #16834e;
+            margin: 10px 0;
+        }
+
+        .formula {
+            color: #666;
+            font-size: 13px;
+            margin-top: 15px;
+        }
+
+        .note {
+            margin-top: 22px;
+            font-size: 12px;
+            color: #777;
+            text-align: center;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Skyworth Solar Calculator</h1>
-        <p>Welcome to our Solar Calculator!</p>
-        <p>Website is working successfully.</p>
+
+<div class="container">
+    <div class="logo">☀️</div>
+    <h1>Yang Solar Energy</h1>
+    <p class="subtitle">
+        Kalkulator Insentif Cekap Tenaga (ICT)
+    </p>
+
+    <label for="usage">
+        Jumlah Penggunaan Anda (kWh)
+    </label>
+
+    <input
+        type="number"
+        id="usage"
+        placeholder="Contoh: 337"
+        min="0"
+        step="any"
+        oninput="hideResult()"
+    >
+
+    <button onclick="calculateICT()">
+        Kira Sekarang
+    </button>
+
+    <div class="result" id="result">
+        <div class="result-label">Kadar ICT Anda</div>
+        <div class="rate" id="rate"></div>
+
+        <div class="result-label">
+            Jumlah Insentif Cekap Tenaga
+        </div>
+        <div class="amount" id="amount"></div>
+
+        <div class="formula" id="formula"></div>
     </div>
+
+    <p class="note">
+        Untuk pengguna domestik TNB sahaja.
+        Anggaran berdasarkan jadual ICT bermula Julai 2025.
+        Bukan jumlah bil elektrik akhir.
+    </p>
+</div>
+
+<script>
+    const ictRates = [
+        [200, 25.00],
+        [250, 24.50],
+        [300, 22.50],
+        [350, 21.00],
+        [400, 17.00],
+        [450, 14.50],
+        [500, 12.00],
+        [550, 10.50],
+        [600, 9.00],
+        [650, 7.50],
+        [700, 5.50],
+        [750, 4.50],
+        [800, 4.00],
+        [850, 2.50],
+        [900, 1.00],
+        [1000, 0.50]
+    ];
+
+    function hideResult() {
+        document.getElementById("result").style.display = "none";
+    }
+
+    function calculateICT() {
+        const input = document.getElementById("usage");
+        const kwh = Number(input.value);
+
+        if (input.value.trim() === "" ||
+            !Number.isFinite(kwh) || kwh <= 0) {
+            alert("Sila masukkan jumlah penggunaan kWh yang sah.");
+            return;
+        }
+
+        let rate = 0;
+
+        for (const [limit, ictRate] of ictRates) {
+            if (kwh <= limit) {
+                rate = ictRate;
+                break;
+            }
+        }
+
+        const discount = kwh * rate / 100;
+
+        document.getElementById("rate").textContent =
+            rate.toFixed(2) + " sen/kWh";
+
+        document.getElementById("amount").textContent =
+            "RM " + discount.toFixed(2);
+
+        document.getElementById("formula").textContent =
+            "Pengiraan: " + kwh + " × " +
+            rate.toFixed(2) + " ÷ 100 = RM " +
+            discount.toFixed(2);
+
+        document.getElementById("result").style.display = "block";
+    }
+
+    document.getElementById("usage")
+        .addEventListener("keydown", function(event) {
+            if (event.key === "Enter") calculateICT();
+        });
+</script>
+
 </body>
 </html>
