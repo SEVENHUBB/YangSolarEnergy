@@ -108,6 +108,7 @@ function calculateBeforeSolar(usage) {
 // SOLAR WITH / WITHOUT BATTERY
 // ======================================
 
+
 function calculateSolar(usage, batteryCount) {
 
     // Night usage = 60%
@@ -122,30 +123,43 @@ function calculateSolar(usage, batteryCount) {
         nightUsage - batteryDeduction
     );
 
+    // Calculate electricity charges
     const charges = calculateCharges(remainingUsage);
+
+    // Calculate ICT based on remaining usage
+    const ictRate = getICTRate(remainingUsage);
+
+    const ictDiscount = round2(
+        remainingUsage * ictRate / 100
+    );
 
     // Sebelum ATAP Suria
     const beforeATAP =
         charges.tenaga +
         charges.kapasiti +
         charges.rangkaian +
-        charges.afa;
+        charges.afa -
+        ictDiscount;
 
     // Selepas ATAP Suria
     const afterATAP =
         charges.kapasiti +
         charges.rangkaian +
-        charges.afa;
+        charges.afa -
+        ictDiscount;
 
     return {
         nightUsage,
         batteryDeduction,
         remainingUsage,
         ...charges,
+        ictRate,
+        ictDiscount,
         beforeATAP,
         afterATAP
     };
 }
+
 
 // ======================================
 // UPDATE HTML ELEMENTS
@@ -193,6 +207,7 @@ function displayBeforeSolar(data) {
 // DISPLAY SOLAR RESULTS
 // ======================================
 
+
 function displaySolar(data, prefix, totalId) {
 
     setText(
@@ -220,18 +235,35 @@ function displaySolar(data, prefix, totalId) {
         formatRM(data.afa)
     );
 
+    // Display ICT Rate
+    setText(
+        prefix + "ICTRate",
+        data.ictRate.toFixed(2) + " sen/kWh"
+    );
+
+    // Display ICT Discount
+    setText(
+        prefix + "ICT",
+        "- " + formatRM(data.ictDiscount)
+    );
+
+    // Sebelum ATAP Suria
     setText(
         prefix + "Before",
         formatRM(data.beforeATAP)
     );
 
+    // Selepas ATAP Suria
     setText(
         prefix + "After",
         formatRM(data.afterATAP)
     );
 
-    // Main displayed total = Selepas ATAP Suria
-    setText(totalId, formatRM(data.afterATAP));
+    // Main total
+    setText(
+        totalId,
+        formatRM(data.afterATAP)
+    );
 }
 
 // ======================================
