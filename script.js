@@ -1,17 +1,23 @@
 
+/* ======================================
+   SKYWORTH SOLAR CALCULATOR
+   COMPLETE UPDATED VERSION
+====================================== */
+
 // ======================================
-// SKYWORTH SOLAR CALCULATOR
+// FORMAT FUNCTIONS
 // ======================================
 
-// Format amount to RM
 function formatRM(amount) {
-    return "RM " + amount.toLocaleString("en-MY", {
+    // Prevent negative zero
+    const value = Math.max(0, round2(amount));
+
+    return "RM " + value.toLocaleString("en-MY", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
 }
 
-// Format electricity usage
 function formatKWh(amount) {
     return amount.toLocaleString("en-MY", {
         minimumFractionDigits: 2,
@@ -19,9 +25,10 @@ function formatKWh(amount) {
     }) + " kWh";
 }
 
-// Round to 2 decimal places
 function round2(value) {
-    return Math.round((value + Number.EPSILON) * 100) / 100;
+    return Math.round(
+        (value + Number.EPSILON) * 100
+    ) / 100;
 }
 
 // ======================================
@@ -58,10 +65,12 @@ function getICTRate(usage) {
 function calculateCharges(usage) {
 
     const tenaga = usage * 0.2703;
+
     const kapasiti = usage * 0.0455;
+
     const rangkaian = usage * 0.1285;
 
-    // AFA only applies above 800 kWh
+    // AFA applies only when usage > 800 kWh
     const afa = usage > 800
         ? usage * 0.038
         : 0;
@@ -75,12 +84,10 @@ function calculateCharges(usage) {
 }
 
 // ======================================
-// BEFORE SOLAR INSTALLATION
+// ICT DISCOUNT CALCULATION
 // ======================================
 
-function calculateBeforeSolar(usage) {
-
-    const charges = calculateCharges(usage);
+function calculateICT(usage) {
 
     const ictRate = getICTRate(usage);
 
@@ -88,18 +95,36 @@ function calculateBeforeSolar(usage) {
         usage * ictRate / 100
     );
 
-    const total =
+    return {
+        ictRate,
+        ictDiscount
+    };
+}
+
+// ======================================
+// BEFORE SOLAR INSTALLATION
+// ======================================
+
+function calculateBeforeSolar(usage) {
+
+    const charges = calculateCharges(usage);
+
+    const ict = calculateICT(usage);
+
+    const calculatedTotal =
         charges.tenaga +
         charges.kapasiti +
         charges.rangkaian +
         charges.afa -
-        ictDiscount;
+        ict.ictDiscount;
+
+    // Final bill cannot be negative
+    const total = Math.max(0, calculatedTotal);
 
     return {
         usage,
         ...charges,
-        ictRate,
-        ictDiscount,
+        ...ict,
         total
     };
 }
@@ -108,13 +133,13 @@ function calculateBeforeSolar(usage) {
 // SOLAR WITH / WITHOUT BATTERY
 // ======================================
 
-
 function calculateSolar(usage, batteryCount) {
 
-    // Night usage = 60%
+    // Night electricity usage = 60%
     const nightUsage = usage * 0.60;
 
-    // Each battery deducts 450 kWh
+    // 1 battery = 450 kWh deduction
+    // 2 batteries = 900 kWh deduction
     const batteryDeduction = batteryCount * 450;
 
     // Remaining usage cannot be negative
@@ -127,46 +152,52 @@ function calculateSolar(usage, batteryCount) {
     const charges = calculateCharges(remainingUsage);
 
     // Calculate ICT based on remaining usage
-    const ictRate = getICTRate(remainingUsage);
+    const ict = calculateICT(remainingUsage);
 
-    const ictDiscount = round2(
-        remainingUsage * ictRate / 100
+    // ==================================
+    // SEBELUM ATAP SURIA
+    // ==================================
+
+    const calculatedBeforeATAP =
+        charges.tenaga +
+        charges.kapasiti +
+        charges.rangkaian +
+        charges.afa -
+        ict.ictDiscount;
+
+    const beforeATAP = Math.max(
+        0,
+        calculatedBeforeATAP
     );
 
-    // Sebelum ATAP Suria
+    // ==================================
+    // SELEPAS ATAP SURIA
+    // ==================================
 
-const beforeATAP = Math.max(
-    0,
-    charges.tenaga +
-    charges.kapasiti +
-    charges.rangkaian +
-    charges.afa -
-    ictDiscount
-);
+    const calculatedAfterATAP =
+        charges.kapasiti +
+        charges.rangkaian +
+        charges.afa -
+        ict.ictDiscount;
 
-const afterATAP = Math.max(
-    0,
-    charges.kapasiti +
-    charges.rangkaian +
-    charges.afa -
-    ictDiscount
-);
+    const afterATAP = Math.max(
+        0,
+        calculatedAfterATAP
+    );
 
     return {
         nightUsage,
         batteryDeduction,
         remainingUsage,
         ...charges,
-        ictRate,
-        ictDiscount,
+        ...ict,
         beforeATAP,
         afterATAP
     };
 }
 
-
 // ======================================
-// UPDATE HTML ELEMENTS
+// UPDATE HTML ELEMENT
 // ======================================
 
 function setText(id, value) {
@@ -184,15 +215,30 @@ function setText(id, value) {
 
 function displayBeforeSolar(data) {
 
-    setText("beforeUsage", formatKWh(data.usage));
+    setText(
+        "beforeUsage",
+        formatKWh(data.usage)
+    );
 
-    setText("beforeTenaga", formatRM(data.tenaga));
+    setText(
+        "beforeTenaga",
+        formatRM(data.tenaga)
+    );
 
-    setText("beforeKapasiti", formatRM(data.kapasiti));
+    setText(
+        "beforeKapasiti",
+        formatRM(data.kapasiti)
+    );
 
-    setText("beforeRangkaian", formatRM(data.rangkaian));
+    setText(
+        "beforeRangkaian",
+        formatRM(data.rangkaian)
+    );
 
-    setText("beforeAFA", formatRM(data.afa));
+    setText(
+        "beforeAFA",
+        formatRM(data.afa)
+    );
 
     setText(
         "ictRate",
@@ -204,48 +250,55 @@ function displayBeforeSolar(data) {
         "- " + formatRM(data.ictDiscount)
     );
 
-    setText("beforeTotal", formatRM(data.total));
+    setText(
+        "beforeTotal",
+        formatRM(data.total)
+    );
 }
 
 // ======================================
 // DISPLAY SOLAR RESULTS
 // ======================================
 
-
 function displaySolar(data, prefix, totalId) {
 
+    // Remaining electricity usage
     setText(
         prefix + "Usage",
         formatKWh(data.remainingUsage)
     );
 
+    // Tenaga
     setText(
         prefix + "Tenaga",
         formatRM(data.tenaga)
     );
 
+    // Kapasiti
     setText(
         prefix + "Kapasiti",
         formatRM(data.kapasiti)
     );
 
+    // Caj Rangkaian
     setText(
         prefix + "Rangkaian",
         formatRM(data.rangkaian)
     );
 
+    // AFA
     setText(
         prefix + "AFA",
         formatRM(data.afa)
     );
 
-    // Display ICT Rate
+    // ICT Rate
     setText(
         prefix + "ICTRate",
         data.ictRate.toFixed(2) + " sen/kWh"
     );
 
-    // Display ICT Discount
+    // ICT Discount
     setText(
         prefix + "ICT",
         "- " + formatRM(data.ictDiscount)
@@ -263,7 +316,7 @@ function displaySolar(data, prefix, totalId) {
         formatRM(data.afterATAP)
     );
 
-    // Main total
+    // Main displayed amount
     setText(
         totalId,
         formatRM(data.afterATAP)
@@ -271,7 +324,7 @@ function displaySolar(data, prefix, totalId) {
 }
 
 // ======================================
-// MAIN CALCULATION
+// MAIN CALCULATION FUNCTION
 // ======================================
 
 function calculateAll() {
@@ -282,9 +335,9 @@ function calculateAll() {
 
     const inputValue = input.value.trim();
 
-    // Reset to zero when input is empty
     let usage = Number(inputValue);
 
+    // Prevent invalid electricity usage
     if (
         inputValue === "" ||
         !Number.isFinite(usage) ||
@@ -293,20 +346,24 @@ function calculateAll() {
         usage = 0;
     }
 
-    // 1. Before solar
+    // ==================================
+    // CALCULATE ALL FOUR OPTIONS
+    // ==================================
+
+    // 1. Before Solar
     const beforeSolar = calculateBeforeSolar(usage);
 
-    // 2. Solar without battery
+    // 2. Solar Without Battery
     const noBattery = calculateSolar(usage, 0);
 
-    // 3. Solar with 1 battery
+    // 3. Solar With 1 Battery (16 kWh)
     const oneBattery = calculateSolar(usage, 1);
 
-    // 4. Solar with 2 batteries
+    // 4. Solar With 2 Batteries (32 kWh)
     const twoBattery = calculateSolar(usage, 2);
 
     // ==================================
-    // DISPLAY ALL FOUR RESULTS
+    // DISPLAY ALL RESULTS
     // ==================================
 
     displayBeforeSolar(beforeSolar);
@@ -330,18 +387,25 @@ function calculateAll() {
     );
 
     // ==================================
-    // MONTHLY SAVINGS
+    // ESTIMATED MONTHLY SAVINGS
     // ==================================
 
-    const savingNoBattery =
-        beforeSolar.total - noBattery.afterATAP;
+    const savingNoBattery = Math.max(
+        0,
+        beforeSolar.total - noBattery.afterATAP
+    );
 
-    const savingOneBattery =
-        beforeSolar.total - oneBattery.afterATAP;
+    const savingOneBattery = Math.max(
+        0,
+        beforeSolar.total - oneBattery.afterATAP
+    );
 
-    const savingTwoBattery =
-        beforeSolar.total - twoBattery.afterATAP;
+    const savingTwoBattery = Math.max(
+        0,
+        beforeSolar.total - twoBattery.afterATAP
+    );
 
+    // Display savings
     setText(
         "savingNoBattery",
         formatRM(savingNoBattery)
@@ -359,7 +423,7 @@ function calculateAll() {
 }
 
 // ======================================
-// RUN WHEN PAGE LOADS
+// RUN AUTOMATICALLY WHEN PAGE LOADS
 // ======================================
 
 document.addEventListener("DOMContentLoaded", function () {
