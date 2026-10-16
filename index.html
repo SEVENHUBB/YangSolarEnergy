@@ -1,238 +1,294 @@
 
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yang Solar Energy - Kalkulator ICT</title>
-    <style>
-        * { box-sizing: border-box; }
 
-        body {
-            margin: 0;
-            padding: 24px 16px;
-            min-height: 100vh;
-            font-family: Arial, sans-serif;
-            background: #f2f7f4;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    <title>Skyworth Solar Calculator</title>
 
-        .container {
-            width: 100%;
-            max-width: 460px;
-            padding: 32px 25px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 8px 30px #00000012;
-        }
-
-        .logo {
-            font-size: 42px;
-            text-align: center;
-        }
-
-        h1 {
-            color: #167b4a;
-            text-align: center;
-            font-size: 27px;
-            margin: 12px 0;
-        }
-
-        .subtitle {
-            color: #666;
-            text-align: center;
-            line-height: 1.6;
-            margin-bottom: 30px;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        input {
-            width: 100%;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            font-size: 18px;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: #16834e;
-        }
-
-        button {
-            width: 100%;
-            padding: 15px;
-            margin-top: 18px;
-            background: #16834e;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 17px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:hover { background: #10683d; }
-
-        .result {
-            display: none;
-            margin-top: 25px;
-            padding: 22px;
-            background: #edf8f0;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .result-label {
-            font-size: 13px;
-            color: #555;
-            text-transform: uppercase;
-        }
-
-        .rate {
-            font-size: 22px;
-            font-weight: bold;
-            margin: 10px 0 22px;
-        }
-
-        .amount {
-            font-size: 38px;
-            font-weight: bold;
-            color: #16834e;
-            margin: 10px 0;
-        }
-
-        .formula {
-            color: #666;
-            font-size: 13px;
-            margin-top: 15px;
-        }
-
-        .note {
-            margin-top: 22px;
-            font-size: 12px;
-            color: #777;
-            text-align: center;
-            line-height: 1.6;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
 </head>
+
 <body>
 
-<div class="container">
-    <div class="logo">☀️</div>
-    <h1>Yang Solar Energy</h1>
-    <p class="subtitle">
-        Kalkulator Insentif Cekap Tenaga (ICT)
-    </p>
-
-    <label for="usage">
-        Jumlah Penggunaan Anda (kWh)
-    </label>
-
-    <input
-        type="number"
-        id="usage"
-        placeholder="Contoh: 337"
-        min="0"
-        step="any"
-        oninput="hideResult()"
-    >
-
-    <button onclick="calculateICT()">
-        Kira Sekarang
-    </button>
-
-    <div class="result" id="result">
-        <div class="result-label">Kadar ICT Anda</div>
-        <div class="rate" id="rate"></div>
-
-        <div class="result-label">
-            Jumlah Insentif Cekap Tenaga
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1>SKYWORTH SOLAR</h1>
+            <p>Solar Electricity Savings Calculator</p>
         </div>
-        <div class="amount" id="amount"></div>
+    </header>
 
-        <div class="formula" id="formula"></div>
-    </div>
+    <main class="container">
 
-    <p class="note">
-        Untuk pengguna domestik TNB sahaja.
-        Anggaran berdasarkan jadual ICT bermula Julai 2025.
-        Bukan jumlah bil elektrik akhir.
-    </p>
-</div>
+        <!-- Customer Input -->
+        <section class="input-section">
+            <h2>Electricity Usage</h2>
+            <p>
+                Enter the monthly electricity consumption
+                from the customer's TNB bill.
+            </p>
 
-<script>
-    const ictRates = [
-        [200, 25.00],
-        [250, 24.50],
-        [300, 22.50],
-        [350, 21.00],
-        [400, 17.00],
-        [450, 14.50],
-        [500, 12.00],
-        [550, 10.50],
-        [600, 9.00],
-        [650, 7.50],
-        [700, 5.50],
-        [750, 4.50],
-        [800, 4.00],
-        [850, 2.50],
-        [900, 1.00],
-        [1000, 0.50]
-    ];
+            <div class="input-group">
+                <label for="jumlah">
+                    Jumlah Penggunaan Anda (kWh)
+                </label>
 
-    function hideResult() {
-        document.getElementById("result").style.display = "none";
-    }
+                <input
+                    type="number"
+                    id="jumlah"
+                    min="0"
+                    step="any"
+                    placeholder="Example: 1653"
+                    oninput="calculateAll()"
+                >
+            </div>
+        </section>
 
-    function calculateICT() {
-        const input = document.getElementById("usage");
-        const kwh = Number(input.value);
+        <!-- Results -->
+        <section class="results-section">
 
-        if (input.value.trim() === "" ||
-            !Number.isFinite(kwh) || kwh <= 0) {
-            alert("Sila masukkan jumlah penggunaan kWh yang sah.");
-            return;
-        }
+            <h2>Solar Savings Comparison</h2>
 
-        let rate = 0;
+            <div class="results-grid">
 
-        for (const [limit, ictRate] of ictRates) {
-            if (kwh <= limit) {
-                rate = ictRate;
-                break;
-            }
-        }
+                <!-- Before Solar -->
+                <div class="result-card">
+                    <h3>Sebelum Pasang</h3>
+                    <p>Before Solar Installation</p>
 
-        const discount = kwh * rate / 100;
+                    <h2 id="beforeTotal">RM 0.00</h2>
 
-        document.getElementById("rate").textContent =
-            rate.toFixed(2) + " sen/kWh";
+                    <div class="details">
+                        <p>
+                            Jumlah:
+                            <span id="beforeUsage">0 kWh</span>
+                        </p>
 
-        document.getElementById("amount").textContent =
-            "RM " + discount.toFixed(2);
+                        <p>
+                            Tenaga:
+                            <span id="beforeTenaga">RM 0.00</span>
+                        </p>
 
-        document.getElementById("formula").textContent =
-            "Pengiraan: " + kwh + " × " +
-            rate.toFixed(2) + " ÷ 100 = RM " +
-            discount.toFixed(2);
+                        <p>
+                            Kapasiti:
+                            <span id="beforeKapasiti">RM 0.00</span>
+                        </p>
 
-        document.getElementById("result").style.display = "block";
-    }
+                        <p>
+                            Caj Rangkaian:
+                            <span id="beforeRangkaian">RM 0.00</span>
+                        </p>
 
-    document.getElementById("usage")
-        .addEventListener("keydown", function(event) {
-            if (event.key === "Enter") calculateICT();
-        });
-</script>
+                        <p>
+                            AFA:
+                            <span id="beforeAFA">RM 0.00</span>
+                        </p>
+
+                        <p>
+                            ICT Rate:
+                            <span id="ictRate">0 sen/kWh</span>
+                        </p>
+
+                        <p>
+                            ICT Discount:
+                            <span id="ictDiscount">RM 0.00</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- No Battery -->
+                <div class="result-card">
+                    <h3>Tidak Battery</h3>
+                    <p>Solar Without Battery</p>
+
+                    <h2 id="noBatteryTotal">RM 0.00</h2>
+
+                    <div class="details">
+                        <p>
+                            Malam Usage (60%):
+                            <span id="noBatteryUsage">0 kWh</span>
+                        </p>
+
+                        <p>
+                            Tenaga:
+                            <span id="noBatteryTenaga">RM 0.00</span>
+                        </p>
+
+                        <p>
+                            Kapasiti:
+                            <span id="noBatteryKapasiti">RM 0.00</span>
+                        </p>
+
+                        <p>
+                            Caj Rangkaian:
+                            <span id="noBatteryRangkaian">RM 0.00</span>
+                        </p>
+
+                        <p>
+                            AFA:
+                            <span id="noBatteryAFA">RM 0.00</span>
+                        </p>
+
+                        <p>
+                            Sebelum ATAP Suria:
+                            <span id="noBatteryBefore">RM 0.00</span>
+                        </p>
+
+                        <p>
+                            Selepas ATAP Suria:
+                            <span id="noBatteryAfter">RM 0.00</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- One Battery -->
+                <div class="result-card">
+                    <h3>Ada 1 Battery</h3>
+                    <p>Solar With 16 kWh Battery</p>
+
+                    <h2 id="oneBatteryTotal">RM 0.00</h2>
+
+                    <div class="details">
+                        <p>
+                            Battery Deduction:
+                            <span>450 kWh</span>
+                        </p>
+
+                        <p>
+                            Remaining Usage:
+                            <span id="oneBatteryUsage">0 kWh</span>
+                        </p>
+
+                        <p>
+                            Tenaga:
+                            <span id="oneBatteryTenaga">RM 0.00</span>
+                        </p>
+
+                        <p>
+                            Kapasiti:
+                            <span id="oneBatteryKapasiti">RM 0.00</span>
+                        </p>
+
+                        <p>
+                            Caj Rangkaian:
+                            <span id="oneBatteryRangkaian">RM 0.00</span>
+                        </p>
+
+                        <p>
+                            AFA:
+                            <span id="oneBatteryAFA">RM 0.00</span>
+                        </p>
+
+                        <p>
+                            Sebelum ATAP Suria:
+                            <span id="oneBatteryBefore">RM 0.00</span>
+                        </p>
+
+                        <p>
+                            Selepas ATAP Suria:
+                            <span id="oneBatteryAfter">RM 0.00</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Two Batteries -->
+                <div class="result-card">
+                    <h3>Ada 2 Batteries</h3>
+                    <p>Solar With 32 kWh Battery</p>
+
+                    <h2 id="twoBatteryTotal">RM 0.00</h2>
+
+                    <div class="details">
+                        <p>
+                            Battery Deduction:
+                            <span>900 kWh</span>
+                        </p>
+
+                        <p>
+                            Remaining Usage:
+                            <span id="twoBatteryUsage">0 kWh</span>
+                        </p>
+
+                        <p>
+                            Tenaga:
+                            <span id="twoBatteryTenaga">RM 0.00</span>
+                        </p>
+
+                        <p>
+                            Kapasiti:
+                            <span id="twoBatteryKapasiti">RM 0.00</span>
+                        </p>
+
+                        <p>
+                            Caj Rangkaian:
+                            <span id="twoBatteryRangkaian">RM 0.00</span>
+                        </p>
+
+                        <p>
+                            AFA:
+                            <span id="twoBatteryAFA">RM 0.00</span>
+                        </p>
+
+                        <p>
+                            Sebelum ATAP Suria:
+                            <span id="twoBatteryBefore">RM 0.00</span>
+                        </p>
+
+                        <p>
+                            Selepas ATAP Suria:
+                            <span id="twoBatteryAfter">RM 0.00</span>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Savings Summary -->
+        <section class="savings-section">
+
+            <h2>Estimated Monthly Savings</h2>
+
+            <div class="savings-grid">
+
+                <div class="saving-card">
+                    <h3>No Battery</h3>
+                    <h2 id="savingNoBattery">RM 0.00</h2>
+                </div>
+
+                <div class="saving-card">
+                    <h3>1 Battery</h3>
+                    <h2 id="savingOneBattery">RM 0.00</h2>
+                </div>
+
+                <div class="saving-card">
+                    <h3>2 Batteries</h3>
+                    <h2 id="savingTwoBattery">RM 0.00</h2>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Print -->
+        <section class="print-section">
+            <button onclick="window.print()">
+                Print / Save as PDF
+            </button>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>Skyworth Solar Calculator</p>
+        <p>
+            Estimates are based on the configured
+            calculation assumptions.
+        </p>
+    </footer>
 
 </body>
 </html>
