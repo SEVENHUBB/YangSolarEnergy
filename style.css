@@ -1,0 +1,359 @@
+
+/* =========================
+   GLOBAL STYLE
+========================= */
+
+:root {
+    --primary: #087f5b;
+    --primary-dark: #065f46;
+    --primary-light: #e8f7ef;
+    --background: #f4f7f6;
+    --white: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.container {
+    width: 92%;
+    max-width: 1250px;
+    margin: 0 auto;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+    background: linear-gradient(
+        135deg,
+        var(--primary-dark),
+        var(--primary)
+    );
+    color: white;
+    padding: 36px 0;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 32px;
+    letter-spacing: 2px;
+}
+
+.header p {
+    margin-top: 6px;
+    opacity: 0.9;
+}
+
+/* =========================
+   INPUT SECTION
+========================= */
+
+.input-section {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    margin-top: 30px;
+    box-shadow: var(--shadow);
+}
+
+.input-section h2 {
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+}
+
+.input-section > p {
+    color: var(--muted);
+    margin-bottom: 22px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.input-group label {
+    font-weight: bold;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    font-size: 20px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.input-group input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(8, 127, 91, 0.1);
+}
+
+/* =========================
+   RESULTS SECTION
+========================= */
+
+.results-section {
+    margin-top: 40px;
+}
+
+.results-section > h2,
+.savings-section > h2 {
+    margin-bottom: 20px;
+    font-size: 25px;
+    color: var(--primary-dark);
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.result-card {
+    background: white;
+    padding: 26px;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    min-width: 0;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.result-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.result-card h3 {
+    font-size: 21px;
+    color: var(--primary-dark);
+}
+
+.result-card > p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.result-card > h2 {
+    font-size: 32px;
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+
+/* =========================
+   CALCULATION DETAILS
+========================= */
+
+.details {
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+}
+
+.details p {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+}
+
+.details span {
+    font-weight: bold;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.details p:last-child {
+    border-bottom: none;
+}
+
+/* =========================
+   SAVINGS SECTION
+========================= */
+
+.savings-section {
+    margin-top: 40px;
+}
+
+.savings-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.saving-card {
+    background: var(--primary-light);
+    border: 1px solid #b7e4c7;
+    border-radius: 16px;
+    padding: 25px;
+    text-align: center;
+}
+
+.saving-card h3 {
+    color: var(--primary-dark);
+    font-size: 17px;
+    margin-bottom: 12px;
+}
+
+.saving-card h2 {
+    color: var(--primary);
+    font-size: 29px;
+}
+
+/* =========================
+   PRINT BUTTON
+========================= */
+
+.print-section {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.print-section button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 15px 35px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.print-section button:hover {
+    background: var(--primary-dark);
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+    background: #1f2937;
+    color: white;
+    padding: 25px;
+    text-align: center;
+    font-size: 13px;
+}
+
+footer p {
+    margin-bottom: 5px;
+}
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 900px) {
+    .results-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .savings-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+    .header {
+        padding: 25px 0;
+    }
+
+    .header h1 {
+        font-size: 24px;
+    }
+
+    .input-section {
+        padding: 20px;
+    }
+
+    .result-card {
+        padding: 20px;
+    }
+
+    .result-card > h2 {
+        font-size: 27px;
+    }
+
+    .details p {
+        font-size: 12px;
+    }
+
+    .details span {
+        white-space: normal;
+    }
+
+    .saving-card h2 {
+        font-size: 25px;
+    }
+}
+
+/* =========================
+   PRINT / SAVE AS PDF
+========================= */
+
+@media print {
+    body {
+        background: white;
+    }
+
+    .header {
+        background: white !important;
+        color: black;
+        padding: 15px 0;
+    }
+
+    .input-section,
+    .result-card,
+    .saving-card {
+        box-shadow: none;
+    }
+
+    .print-section {
+        display: none;
+    }
+
+    .result-card,
+    .saving-card {
+        break-inside: avoid;
+    }
+
+    .results-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .savings-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    footer {
+        background: white;
+        color: black;
+    }
+}
