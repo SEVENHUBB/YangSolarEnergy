@@ -134,19 +134,18 @@ function calculateSolar(usage, batteryCount) {
     );
 
     // Sebelum ATAP Suria
-    const beforeATAP =
-        charges.tenaga +
-        charges.kapasiti +
-        charges.rangkaian +
-        charges.afa -
-        ictDiscount;
+ const beforeATAP =
+    charges.tenaga +
+    charges.kapasiti +
+    charges.rangkaian +
+    charges.afa -
+    ictDiscount;
 
-    // Selepas ATAP Suria
-    const afterATAP =
-        charges.kapasiti +
-        charges.rangkaian +
-        charges.afa -
-        ictDiscount;
+const afterATAP =
+    charges.kapasiti +
+    charges.rangkaian +
+    charges.afa -
+    ictDiscount;
 
     return {
         nightUsage,
