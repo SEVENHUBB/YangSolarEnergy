@@ -1,37 +1,55 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Skyworth Solar Calculator</title>
 
     <link rel="stylesheet" href="style.css">
-<script src="script.js?v=4" defer></script>
+
+    <!-- Updated JavaScript -->
+    <script src="script.js?v=5" defer></script>
 </head>
 
 <body>
 
-    <!-- Header -->
+    <!-- =========================
+         HEADER
+    ========================= -->
+
     <header class="header">
         <div class="container">
+
             <h1>SKYWORTH SOLAR</h1>
+
             <p>Solar Electricity Savings Calculator</p>
+
         </div>
     </header>
 
+
     <main class="container">
 
-        <!-- Customer Input -->
+        <!-- =========================
+             CUSTOMER INPUT
+        ========================= -->
+
         <section class="input-section">
+
             <h2>Electricity Usage</h2>
+
             <p>
                 Enter the monthly electricity consumption
                 from the customer's TNB bill.
             </p>
 
             <div class="input-group">
+
                 <label for="jumlah">
                     Jumlah Penggunaan Anda (kWh)
                 </label>
@@ -44,123 +62,219 @@
                     placeholder="Example: 1653"
                     oninput="calculateAll()"
                 >
+
             </div>
+
         </section>
 
-        <!-- Results -->
+
+        <!-- =========================
+             SOLAR COMPARISON
+        ========================= -->
+
         <section class="results-section">
 
             <h2>Solar Savings Comparison</h2>
 
             <div class="results-grid">
 
-                <!-- Before Solar -->
+
+                <!-- =========================
+                     1. SEBELUM PASANG
+                ========================= -->
+
                 <div class="result-card">
+
                     <h3>Sebelum Pasang</h3>
+
                     <p>Before Solar Installation</p>
 
                     <h2 id="beforeTotal">RM 0.00</h2>
 
                     <div class="details">
+
                         <p>
-                            Jumlah:
-                            <span id="beforeUsage">0 kWh</span>
+                            Jumlah Penggunaan:
+                            <span id="beforeUsage">
+                                0 kWh
+                            </span>
                         </p>
 
                         <p>
                             Tenaga:
-                            <span id="beforeTenaga">RM 0.00</span>
+                            <span id="beforeTenaga">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
                             Kapasiti:
-                            <span id="beforeKapasiti">RM 0.00</span>
+                            <span id="beforeKapasiti">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
                             Caj Rangkaian:
-                            <span id="beforeRangkaian">RM 0.00</span>
+                            <span id="beforeRangkaian">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
                             AFA:
-                            <span id="beforeAFA">RM 0.00</span>
+                            <span id="beforeAFA">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
                             ICT Rate:
-                            <span id="ictRate">0 sen/kWh</span>
+                            <span id="ictRate">
+                                0 sen/kWh
+                            </span>
                         </p>
 
                         <p>
                             ICT Discount:
-                            <span id="ictDiscount">RM 0.00</span>
+                            <span id="ictDiscount">
+                                RM 0.00
+                            </span>
                         </p>
+
                     </div>
+
                 </div>
 
-                <!-- No Battery -->
+
+                <!-- =========================
+                     2. NO BATTERY
+                ========================= -->
+
                 <div class="result-card">
+
                     <h3>Tidak Battery</h3>
+
                     <p>Solar Without Battery</p>
 
-                    <h2 id="noBatteryTotal">RM 0.00</h2>
+                    <h2 id="noBatteryTotal">
+                        RM 0.00
+                    </h2>
 
                     <div class="details">
+
                         <p>
                             Malam Usage (60%):
-                            <span id="noBatteryUsage">0 kWh</span>
+                            <span id="noBatteryUsage">
+                                0 kWh
+                            </span>
                         </p>
 
                         <p>
                             Tenaga:
-                            <span id="noBatteryTenaga">RM 0.00</span>
+                            <span id="noBatteryTenaga">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
                             Kapasiti:
-                            <span id="noBatteryKapasiti">RM 0.00</span>
+                            <span id="noBatteryKapasiti">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
                             Caj Rangkaian:
-                            <span id="noBatteryRangkaian">RM 0.00</span>
+                            <span id="noBatteryRangkaian">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
                             AFA:
-                            <span id="noBatteryAFA">RM 0.00</span>
+                            <span id="noBatteryAFA">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
-    ICT Rate:
-    <span id="noBatteryICTRate">0 sen/kWh</span>
-</p>
+                            ICT Rate:
+                            <span id="noBatteryICTRate">
+                                0 sen/kWh
+                            </span>
+                        </p>
 
-<p>
-    ICT Discount:
-    <span id="noBatteryICT">RM 0.00</span>
-</p>
+                        <p>
+                            ICT Discount:
+                            <span id="noBatteryICT">
+                                RM 0.00
+                            </span>
+                        </p>
+
+                        <p>
+                            KWTBB (1.6%):
+                            <span id="noBatteryKWTBB">
+                                RM 0.00
+                            </span>
+                        </p>
+
+                        <p>
+                            Eligible Export Usage:
+                            <span id="noBatteryExportUsage">
+                                0 kWh
+                            </span>
+                        </p>
+
+                        <p>
+                            Kredit ATAP Suria:
+                            <span id="noBatteryATAPCredit">
+                                RM 0.00
+                            </span>
+                        </p>
+
+                        <p>
+                            Pelarasan Insentif:
+                            <span id="noBatteryPelarasan">
+                                RM 0.00
+                            </span>
+                        </p>
+
                         <p>
                             Sebelum ATAP Suria:
-                            <span id="noBatteryBefore">RM 0.00</span>
+                            <span id="noBatteryBefore">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
                             Selepas ATAP Suria:
-                            <span id="noBatteryAfter">RM 0.00</span>
+                            <span id="noBatteryAfter">
+                                RM 0.00
+                            </span>
                         </p>
+
                     </div>
+
                 </div>
 
-                <!-- One Battery -->
+
+                <!-- =========================
+                     3. ONE BATTERY
+                ========================= -->
+
                 <div class="result-card">
+
                     <h3>Ada 1 Battery</h3>
+
                     <p>Solar With 16 kWh Battery</p>
 
-                    <h2 id="oneBatteryTotal">RM 0.00</h2>
+                    <h2 id="oneBatteryTotal">
+                        RM 0.00
+                    </h2>
 
                     <div class="details">
+
                         <p>
                             Battery Deduction:
                             <span>450 kWh</span>
@@ -168,58 +282,116 @@
 
                         <p>
                             Remaining Usage:
-                            <span id="oneBatteryUsage">0 kWh</span>
+                            <span id="oneBatteryUsage">
+                                0 kWh
+                            </span>
                         </p>
 
                         <p>
                             Tenaga:
-                            <span id="oneBatteryTenaga">RM 0.00</span>
+                            <span id="oneBatteryTenaga">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
                             Kapasiti:
-                            <span id="oneBatteryKapasiti">RM 0.00</span>
+                            <span id="oneBatteryKapasiti">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
                             Caj Rangkaian:
-                            <span id="oneBatteryRangkaian">RM 0.00</span>
+                            <span id="oneBatteryRangkaian">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
                             AFA:
-                            <span id="oneBatteryAFA">RM 0.00</span>
+                            <span id="oneBatteryAFA">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
-    ICT Rate:
-    <span id="oneBatteryICTRate">0 sen/kWh</span>
-</p>
+                            ICT Rate:
+                            <span id="oneBatteryICTRate">
+                                0 sen/kWh
+                            </span>
+                        </p>
 
-<p>
-    ICT Discount:
-    <span id="oneBatteryICT">RM 0.00</span>
-</p>
+                        <p>
+                            ICT Discount:
+                            <span id="oneBatteryICT">
+                                RM 0.00
+                            </span>
+                        </p>
+
+                        <p>
+                            KWTBB (1.6%):
+                            <span id="oneBatteryKWTBB">
+                                RM 0.00
+                            </span>
+                        </p>
+
+                        <p>
+                            Eligible Export Usage:
+                            <span id="oneBatteryExportUsage">
+                                0 kWh
+                            </span>
+                        </p>
+
+                        <p>
+                            Kredit ATAP Suria:
+                            <span id="oneBatteryATAPCredit">
+                                RM 0.00
+                            </span>
+                        </p>
+
+                        <p>
+                            Pelarasan Insentif:
+                            <span id="oneBatteryPelarasan">
+                                RM 0.00
+                            </span>
+                        </p>
+
                         <p>
                             Sebelum ATAP Suria:
-                            <span id="oneBatteryBefore">RM 0.00</span>
+                            <span id="oneBatteryBefore">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
                             Selepas ATAP Suria:
-                            <span id="oneBatteryAfter">RM 0.00</span>
+                            <span id="oneBatteryAfter">
+                                RM 0.00
+                            </span>
                         </p>
+
                     </div>
+
                 </div>
 
-                <!-- Two Batteries -->
+
+                <!-- =========================
+                     4. TWO BATTERIES
+                ========================= -->
+
                 <div class="result-card">
+
                     <h3>Ada 2 Batteries</h3>
+
                     <p>Solar With 32 kWh Battery</p>
 
-                    <h2 id="twoBatteryTotal">RM 0.00</h2>
+                    <h2 id="twoBatteryTotal">
+                        RM 0.00
+                    </h2>
 
                     <div class="details">
+
                         <p>
                             Battery Deduction:
                             <span>900 kWh</span>
@@ -227,53 +399,108 @@
 
                         <p>
                             Remaining Usage:
-                            <span id="twoBatteryUsage">0 kWh</span>
+                            <span id="twoBatteryUsage">
+                                0 kWh
+                            </span>
                         </p>
 
                         <p>
                             Tenaga:
-                            <span id="twoBatteryTenaga">RM 0.00</span>
+                            <span id="twoBatteryTenaga">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
                             Kapasiti:
-                            <span id="twoBatteryKapasiti">RM 0.00</span>
+                            <span id="twoBatteryKapasiti">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
                             Caj Rangkaian:
-                            <span id="twoBatteryRangkaian">RM 0.00</span>
+                            <span id="twoBatteryRangkaian">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
                             AFA:
-                            <span id="twoBatteryAFA">RM 0.00</span>
+                            <span id="twoBatteryAFA">
+                                RM 0.00
+                            </span>
                         </p>
-<p>
-    ICT Rate:
-    <span id="twoBatteryICTRate">0 sen/kWh</span>
-</p>
 
-<p>
-    ICT Discount:
-    <span id="twoBatteryICT">RM 0.00</span>
-</p>
+                        <p>
+                            ICT Rate:
+                            <span id="twoBatteryICTRate">
+                                0 sen/kWh
+                            </span>
+                        </p>
+
+                        <p>
+                            ICT Discount:
+                            <span id="twoBatteryICT">
+                                RM 0.00
+                            </span>
+                        </p>
+
+                        <p>
+                            KWTBB (1.6%):
+                            <span id="twoBatteryKWTBB">
+                                RM 0.00
+                            </span>
+                        </p>
+
+                        <p>
+                            Eligible Export Usage:
+                            <span id="twoBatteryExportUsage">
+                                0 kWh
+                            </span>
+                        </p>
+
+                        <p>
+                            Kredit ATAP Suria:
+                            <span id="twoBatteryATAPCredit">
+                                RM 0.00
+                            </span>
+                        </p>
+
+                        <p>
+                            Pelarasan Insentif:
+                            <span id="twoBatteryPelarasan">
+                                RM 0.00
+                            </span>
+                        </p>
+
                         <p>
                             Sebelum ATAP Suria:
-                            <span id="twoBatteryBefore">RM 0.00</span>
+                            <span id="twoBatteryBefore">
+                                RM 0.00
+                            </span>
                         </p>
 
                         <p>
                             Selepas ATAP Suria:
-                            <span id="twoBatteryAfter">RM 0.00</span>
+                            <span id="twoBatteryAfter">
+                                RM 0.00
+                            </span>
                         </p>
+
                     </div>
+
                 </div>
 
             </div>
+
         </section>
 
-        <!-- Savings Summary -->
+
+        <!-- =========================
+             MONTHLY SAVINGS
+        ========================= -->
+
         <section class="savings-section">
 
             <h2>Estimated Monthly Savings</h2>
@@ -281,39 +508,77 @@
             <div class="savings-grid">
 
                 <div class="saving-card">
+
                     <h3>No Battery</h3>
-                    <h2 id="savingNoBattery">RM 0.00</h2>
+
+                    <h2 id="savingNoBattery">
+                        RM 0.00
+                    </h2>
+
                 </div>
 
                 <div class="saving-card">
+
                     <h3>1 Battery</h3>
-                    <h2 id="savingOneBattery">RM 0.00</h2>
+
+                    <h2 id="savingOneBattery">
+                        RM 0.00
+                    </h2>
+
                 </div>
 
                 <div class="saving-card">
+
                     <h3>2 Batteries</h3>
-                    <h2 id="savingTwoBattery">RM 0.00</h2>
+
+                    <h2 id="savingTwoBattery">
+                        RM 0.00
+                    </h2>
+
                 </div>
 
             </div>
+
         </section>
 
-        <!-- Print -->
+
+        <!-- =========================
+             PRINT / SAVE PDF
+        ========================= -->
+
         <section class="print-section">
-            <button onclick="window.print()">
+
+            <button type="button"
+                    onclick="window.print()">
+
                 Print / Save as PDF
+
             </button>
+
         </section>
 
     </main>
 
-    <!-- Footer -->
+
+    <!-- =========================
+         FOOTER
+    ========================= -->
+
     <footer>
+
         <p>Skyworth Solar Calculator</p>
+
         <p>
             Estimates are based on the configured
             calculation assumptions.
         </p>
+
+        <p>
+            Actual TNB billing may differ depending
+            on ATAP Suria credits, tariff rules,
+            and electricity usage.
+        </p>
+
     </footer>
 
 </body>
