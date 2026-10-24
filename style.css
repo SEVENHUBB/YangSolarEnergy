@@ -388,6 +388,8 @@ footer p {
     }
 }
 
+/* PRINT / SAVE PDF */
+
 @media print {
     body {
         background: white;
