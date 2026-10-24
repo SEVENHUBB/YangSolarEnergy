@@ -1,14 +1,31 @@
 
 // ======================================
 // SKYWORTH SOLAR CALCULATOR
-// ATAP SURIA BILLING MODEL
 // ======================================
 
+// HOUSE RATES
 const TENAGA_RATE = 0.2703;
 const KAPASITI_RATE = 0.0455;
 const RANGKAIAN_RATE = 0.1285;
 const AFA_RATE = 0.038;
 const KWTBB_RATE = 0.016;
+
+// NON-DOMESTIC GENERAL BASE RATES
+// Verify current tariff before using for quotations.
+const NON_DOMESTIC = {
+    LV: {
+        energy: 0.2703,
+        capacity: 0.0883,
+        network: 0.1482,
+        retail: 20
+    },
+    MV: {
+        energy: 0.2983,
+        capacity: 29.43,
+        network: 59.84,
+        retail: 200
+    }
+};
 
 // ======================================
 // FORMAT
@@ -36,86 +53,59 @@ function formatKWh(value) {
 
 function setText(id, value) {
     const element = document.getElementById(id);
+    if (element) element.textContent = value;
+}
 
-    if (element) {
-        element.textContent = value;
-    }
+function numeric(id) {
+    const input = document.getElementById(id);
+    if (!input || input.value.trim() === "") return 0;
+
+    const value = Number(input.value);
+    return Number.isFinite(value) && value >= 0 ? value : 0;
 }
 
 // ======================================
-// ICT RATE TABLE
+// HOUSE ICT
 // ======================================
 
 function getICTRate(usage) {
-
     if (usage <= 0) return 0;
-    if (usage <= 200) return 25.00;
+    if (usage <= 200) return 25;
     if (usage <= 250) return 24.50;
     if (usage <= 300) return 22.50;
-    if (usage <= 350) return 21.00;
-    if (usage <= 400) return 17.00;
+    if (usage <= 350) return 21;
+    if (usage <= 400) return 17;
     if (usage <= 450) return 14.50;
-    if (usage <= 500) return 12.00;
+    if (usage <= 500) return 12;
     if (usage <= 550) return 10.50;
-    if (usage <= 600) return 9.00;
+    if (usage <= 600) return 9;
     if (usage <= 650) return 7.50;
     if (usage <= 700) return 5.50;
     if (usage <= 750) return 4.50;
-    if (usage <= 800) return 4.00;
+    if (usage <= 800) return 4;
     if (usage <= 850) return 2.50;
-    if (usage <= 900) return 1.00;
+    if (usage <= 900) return 1;
     if (usage <= 1000) return 0.50;
-
     return 0;
 }
 
-// ======================================
-// BASIC CHARGES
-// ======================================
-
 function calculateCharges(usage) {
-
-    const tenaga = usage * TENAGA_RATE;
-    const kapasiti = usage * KAPASITI_RATE;
-    const rangkaian = usage * RANGKAIAN_RATE;
-
-    const afa = usage > 800
-        ? usage * AFA_RATE
-        : 0;
-
     return {
-        tenaga,
-        kapasiti,
-        rangkaian,
-        afa
+        tenaga: usage * TENAGA_RATE,
+        kapasiti: usage * KAPASITI_RATE,
+        rangkaian: usage * RANGKAIAN_RATE,
+        afa: usage > 800 ? usage * AFA_RATE : 0
     };
 }
-
-// ======================================
-// ICT
-// ======================================
 
 function calculateICT(usage) {
-
     const ictRate = getICTRate(usage);
+    const ictDiscount = round2(usage * ictRate / 100);
 
-    const ictDiscount = round2(
-        usage * ictRate / 100
-    );
-
-    return {
-        ictRate,
-        ictDiscount
-    };
+    return { ictRate, ictDiscount };
 }
 
-// ======================================
-// BEFORE SOLAR
-// KEEP ORIGINAL FORMULA
-// ======================================
-
 function calculateBeforeSolar(usage) {
-
     const charges = calculateCharges(usage);
     const ict = calculateICT(usage);
 
@@ -137,14 +127,12 @@ function calculateBeforeSolar(usage) {
 }
 
 // ======================================
-// ATAP SURIA CALCULATION
+// HOUSE SOLAR
+// ORIGINAL 60% MODEL
 // ======================================
 
 function calculateSolar(usage, batteryCount) {
-
-    // Previous sales assumptions
     const nightUsage = usage * 0.60;
-
     const batteryDeduction = batteryCount * 450;
 
     const remainingUsage = Math.max(
@@ -155,7 +143,6 @@ function calculateSolar(usage, batteryCount) {
     const charges = calculateCharges(remainingUsage);
     const ict = calculateICT(remainingUsage);
 
-    // Monthly usage charges
     const currentUsageCharge = round2(
         charges.tenaga +
         charges.kapasiti +
@@ -164,44 +151,33 @@ function calculateSolar(usage, batteryCount) {
         ict.ictDiscount
     );
 
-    // KWTBB: assumption based on supplied bill
     const kwtbb = round2(
         Math.max(0, currentUsageCharge) * KWTBB_RATE
     );
 
-    // IMPORTANT:
-    // Temporary assumption for the one-input calculator.
-    // Actual eligible export kWh may differ.
     const eligibleExportKWh = remainingUsage;
 
-    // ATAP energy credit
     const atapCredit = round2(
         eligibleExportKWh * TENAGA_RATE
     );
 
-    // ICT adjustment on credited energy
     const pelarasanInsentif = round2(
         eligibleExportKWh * ict.ictRate / 100
     );
 
-    // Before ATAP credit
     const beforeATAP = Math.max(
         0,
         round2(currentUsageCharge + kwtbb)
     );
 
-    // After ATAP credit and ICT adjustment
-    const calculatedAfterATAP = round2(
-        currentUsageCharge +
-        kwtbb -
-        atapCredit +
-        pelarasanInsentif
-    );
-
-    // Estimated payable amount, minimum zero
     const afterATAP = Math.max(
         0,
-        calculatedAfterATAP
+        round2(
+            currentUsageCharge +
+            kwtbb -
+            atapCredit +
+            pelarasanInsentif
+        )
     );
 
     return {
@@ -221,168 +197,310 @@ function calculateSolar(usage, batteryCount) {
 }
 
 // ======================================
-// DISPLAY BEFORE SOLAR
+// HTML CARD HELPERS
 // ======================================
 
-function displayBeforeSolar(data) {
+function detail(label, value) {
+    return `<p>${label}<span>${value}</span></p>`;
+}
 
-    setText("beforeUsage", formatKWh(data.usage));
-    setText("beforeTenaga", formatRM(data.tenaga));
-    setText("beforeKapasiti", formatRM(data.kapasiti));
-    setText("beforeRangkaian", formatRM(data.rangkaian));
-    setText("beforeAFA", formatRM(data.afa));
+function resultCard(title, subtitle, total, details) {
+    return `
+        <article class="result-card">
+            <h3>${title}</h3>
+            <p>${subtitle}</p>
+            <h2>${formatRM(total)}</h2>
+            <div class="details">${details}</div>
+        </article>
+    `;
+}
 
-    setText(
-        "ictRate",
-        data.ictRate.toFixed(2) + " sen/kWh"
-    );
-
-    setText(
-        "ictDiscount",
-        "- " + formatRM(data.ictDiscount)
-    );
-
-    setText("beforeTotal", formatRM(data.total));
+function savingCard(title, value) {
+    return `
+        <div class="saving-card">
+            <h3>${title}</h3>
+            <h2>${formatRM(value)}</h2>
+        </div>
+    `;
 }
 
 // ======================================
-// DISPLAY SOLAR
+// HOUSE DISPLAY
 // ======================================
 
-function displaySolar(data, prefix, totalId) {
+function houseBeforeCard(d) {
+    const details =
+        detail("Jumlah Penggunaan", formatKWh(d.usage)) +
+        detail("Tenaga", formatRM(d.tenaga)) +
+        detail("Kapasiti", formatRM(d.kapasiti)) +
+        detail("Caj Rangkaian", formatRM(d.rangkaian)) +
+        detail("AFA", formatRM(d.afa)) +
+        detail("ICT Rate", d.ictRate.toFixed(2) + " sen/kWh") +
+        detail("ICT Discount", "- " + formatRM(d.ictDiscount));
 
-    setText(
-        prefix + "Usage",
-        formatKWh(data.remainingUsage)
+    return resultCard(
+        "Sebelum Pasang",
+        "Before Solar Installation",
+        d.total,
+        details
     );
-
-    setText(prefix + "Tenaga", formatRM(data.tenaga));
-    setText(prefix + "Kapasiti", formatRM(data.kapasiti));
-    setText(prefix + "Rangkaian", formatRM(data.rangkaian));
-    setText(prefix + "AFA", formatRM(data.afa));
-
-    setText(
-        prefix + "ICTRate",
-        data.ictRate.toFixed(2) + " sen/kWh"
-    );
-
-    setText(
-        prefix + "ICT",
-        "- " + formatRM(data.ictDiscount)
-    );
-
-    setText(
-        prefix + "KWTBB",
-        formatRM(data.kwtbb)
-    );
-
-    setText(
-        prefix + "ATAPCredit",
-        "- " + formatRM(data.atapCredit)
-    );
-
-    setText(
-        prefix + "Pelarasan",
-        "+ " + formatRM(data.pelarasanInsentif)
-    );
-
-    setText(
-        prefix + "ExportUsage",
-        formatKWh(data.eligibleExportKWh)
-    );
-
-    setText(
-        prefix + "Before",
-        formatRM(data.beforeATAP)
-    );
-
-    setText(
-        prefix + "After",
-        formatRM(data.afterATAP)
-    );
-
-    setText(totalId, formatRM(data.afterATAP));
 }
 
-// ======================================
-// MAIN CALCULATION
-// ======================================
+function houseSolarCard(d, count) {
+    const title = [
+        "Tidak Battery",
+        "Ada 1 Battery",
+        "Ada 2 Batteries"
+    ][count];
 
-function calculateAll() {
+    const subtitle = [
+        "Solar Without Battery",
+        "Solar With 16 kWh Battery",
+        "Solar With 32 kWh Battery"
+    ][count];
 
-    const input = document.getElementById("jumlah");
+    let details = "";
 
-    if (!input) return;
-
-    let usage = Number(input.value);
-
-    if (
-        input.value.trim() === "" ||
-        !Number.isFinite(usage) ||
-        usage < 0
-    ) {
-        usage = 0;
+    if (count > 0) {
+        details += detail(
+            "Battery Deduction",
+            formatKWh(count * 450)
+        );
     }
 
-    const beforeSolar = calculateBeforeSolar(usage);
+    details +=
+        detail(
+            count === 0 ? "Malam Usage (60%)" : "Remaining Usage",
+            formatKWh(d.remainingUsage)
+        ) +
+        detail("Tenaga", formatRM(d.tenaga)) +
+        detail("Kapasiti", formatRM(d.kapasiti)) +
+        detail("Caj Rangkaian", formatRM(d.rangkaian)) +
+        detail("AFA", formatRM(d.afa)) +
+        detail("ICT Rate", d.ictRate.toFixed(2) + " sen/kWh") +
+        detail("ICT Discount", "- " + formatRM(d.ictDiscount)) +
+        detail("KWTBB (1.6%)", formatRM(d.kwtbb)) +
+        detail("Eligible Export Usage", formatKWh(d.eligibleExportKWh)) +
+        detail("Kredit ATAP Suria", "- " + formatRM(d.atapCredit)) +
+        detail("Pelarasan Insentif", "+ " + formatRM(d.pelarasanInsentif)) +
+        detail("Sebelum ATAP Suria", formatRM(d.beforeATAP)) +
+        detail("Selepas ATAP Suria", formatRM(d.afterATAP));
 
-    const noBattery = calculateSolar(usage, 0);
-    const oneBattery = calculateSolar(usage, 1);
-    const twoBattery = calculateSolar(usage, 2);
+    return resultCard(
+        title,
+        subtitle,
+        d.afterATAP,
+        details
+    );
+}
 
-    displayBeforeSolar(beforeSolar);
+function calculateAll() {
+    const usage = numeric("jumlah");
+    const before = calculateBeforeSolar(usage);
 
-    displaySolar(
-        noBattery,
-        "noBattery",
-        "noBatteryTotal"
+    let results = houseBeforeCard(before);
+    let savings = "";
+
+    for (let count = 0; count <= 2; count++) {
+        const solar = calculateSolar(usage, count);
+
+        results += houseSolarCard(solar, count);
+
+        const saving = Math.max(
+            0,
+            before.total - solar.afterATAP
+        );
+
+        const name = [
+            "No Battery",
+            "1 Battery",
+            "2 Batteries"
+        ][count];
+
+        savings += savingCard(name, saving);
+    }
+
+    document.getElementById("houseResults").innerHTML = results;
+    document.getElementById("houseSavings").innerHTML = savings;
+}
+
+// ======================================
+// SHOP & FACTORY BASE BILL
+// ======================================
+
+function nonDomesticBill(kwh, md, voltage) {
+    const rate = NON_DOMESTIC[voltage];
+
+    const energy = kwh * rate.energy;
+
+    const capacity = (
+        voltage === "LV" ? kwh : md
+    ) * rate.capacity;
+
+    const network = (
+        voltage === "LV" ? kwh : md
+    ) * rate.network;
+
+    const retail = rate.retail;
+
+    return {
+        energy,
+        capacity,
+        network,
+        retail,
+        total: energy + capacity + network + retail
+    };
+}
+
+function nonDomesticCard(title, subtitle, kwh, md, voltage) {
+    const bill = nonDomesticBill(kwh, md, voltage);
+
+    let details =
+        detail("Monthly Usage", formatKWh(kwh));
+
+    if (voltage === "MV") {
+        details += detail(
+            "Maximum Demand",
+            md.toFixed(2) + " kW"
+        );
+    }
+
+    details +=
+        detail("Energy Charge", formatRM(bill.energy)) +
+        detail("Capacity Charge", formatRM(bill.capacity)) +
+        detail("Network Charge", formatRM(bill.network)) +
+        detail("Retail Charge", formatRM(bill.retail));
+
+    return resultCard(
+        title,
+        subtitle,
+        bill.total,
+        details
+    );
+}
+
+// ======================================
+// SHOP & FACTORY CALCULATION
+// ======================================
+
+function calculateNonDomestic(type) {
+    const usage = numeric(type + "Usage");
+    const voltage = document.getElementById(
+        type + "Voltage"
+    ).value;
+
+    const md = numeric(type + "MD");
+
+    document.getElementById(
+        type + "MDGroup"
+    ).hidden = voltage !== "MV";
+
+    const before = nonDomesticBill(
+        usage, md, voltage
     );
 
-    displaySolar(
-        oneBattery,
-        "oneBattery",
-        "oneBatteryTotal"
+    let results = nonDomesticCard(
+        "Sebelum Pasang",
+        "Before Solar Installation",
+        usage, md, voltage
     );
 
-    displaySolar(
-        twoBattery,
-        "twoBattery",
-        "twoBatteryTotal"
-    );
+    let savings = "";
 
-    const savingNoBattery = Math.max(
-        0,
-        beforeSolar.total - noBattery.afterATAP
-    );
+    for (let count = 0; count <= 2; count++) {
 
-    const savingOneBattery = Math.max(
-        0,
-        beforeSolar.total - oneBattery.afterATAP
-    );
+        // SAME 60% ASSUMPTION
+        const nightUsage = usage * 0.60;
 
-    const savingTwoBattery = Math.max(
-        0,
-        beforeSolar.total - twoBattery.afterATAP
-    );
+        const batteryDeduction = count * 450;
 
-    setText(
-        "savingNoBattery",
-        formatRM(savingNoBattery)
-    );
+        const remainingUsage = Math.max(
+            0,
+            nightUsage - batteryDeduction
+        );
 
-    setText(
-        "savingOneBattery",
-        formatRM(savingOneBattery)
-    );
+        const after = nonDomesticBill(
+            remainingUsage, md, voltage
+        );
 
-    setText(
-        "savingTwoBattery",
-        formatRM(savingTwoBattery)
-    );
+        const titles = [
+            "Tidak Battery",
+            "Ada 1 Battery",
+            "Ada 2 Batteries"
+        ];
+
+        results += nonDomesticCard(
+            titles[count],
+            "After Solar · Battery Deduction: " +
+                formatKWh(batteryDeduction),
+            remainingUsage,
+            md,
+            voltage
+        );
+
+        const saving = Math.max(
+            0,
+            before.total - after.total
+        );
+
+        const names = [
+            "No Battery",
+            "1 Battery",
+            "2 Batteries"
+        ];
+
+        savings += savingCard(
+            names[count],
+            saving
+        );
+    }
+
+    document.getElementById(
+        type + "Results"
+    ).innerHTML = results;
+
+    document.getElementById(
+        type + "Savings"
+    ).innerHTML = savings;
+}
+
+// ======================================
+// PAGE SWITCHING
+// ======================================
+
+function switchPage(page) {
+    const pages = ["house", "shop", "factory"];
+
+    pages.forEach(name => {
+        const element = document.getElementById(
+            name + "Page"
+        );
+
+        element.hidden = name !== page;
+
+        const button = document.querySelector(
+            `[data-page="${name}"]`
+        );
+
+        button.classList.toggle(
+            "active",
+            name === page
+        );
+    });
+
+    if (page === "house") {
+        calculateAll();
+    } else {
+        calculateNonDomestic(page);
+    }
 }
 
 // ======================================
 // START
 // ======================================
 
-document.addEventListener("DOMContentLoaded", calculateAll);
+document.addEventListener("DOMContentLoaded", () => {
+    calculateAll();
+    calculateNonDomestic("shop");
+    calculateNonDomestic("factory");
+});
