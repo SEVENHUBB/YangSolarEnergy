@@ -12,7 +12,7 @@ const SOLAR_REMAINING_RATIO = 0.60;
 const BATTERY_DEDUCTION_KWH = 450;
 const KWTBB_RATE = 0.016;
 
-// House: previous sales model
+// HOUSE TARIFF
 const HOUSE_RATE = {
     tenaga: 0.2703,
     kapasiti: 0.0455,
@@ -20,19 +20,24 @@ const HOUSE_RATE = {
     afa: 0.038
 };
 
-// Shop: Non-Domestic Low Voltage General
+// SHOP TARIFF
 const SHOP_RATE = {
     tenaga: 0.2703,
     kapasiti: 0.0883,
     rangkaian: 0.1482,
     retail: 20,
-
-    // Estimated AFA from the previous shop bill.
-    // This is not a permanent monthly TNB rate.
     afa: 0.0361
 };
 
-// Factory: previous model
+// SHOP ATAP SALES ESTIMATE
+// NOT official fixed TNB values.
+const SHOP_ATAP_ESTIMATE = {
+    averageSMP: 0.20,
+    exportRatio: 0.10,
+    batteryExportReduction: 0.50
+};
+
+// FACTORY TARIFF
 const FACTORY_RATE = {
     LV: {
         tenaga: 0.2703,
@@ -211,7 +216,6 @@ function houseBill(usage, isSolar = false) {
         )
     );
 
-    // Preserve the previous House calculation model.
     const kwtbb = isSolar
         ? round2(currentCharge * KWTBB_RATE)
         : 0;
@@ -220,10 +224,9 @@ function houseBill(usage, isSolar = false) {
         currentCharge + kwtbb
     );
 
-    // Original House sales assumption:
-    // remaining import usage is also used as
+    // Preserved House sales assumption:
+    // Remaining import usage is used as
     // estimated eligible export usage.
-    // This is NOT measured export generation.
     const estimatedExport = isSolar ? usage : 0;
 
     const atapCredit = isSolar
@@ -402,10 +405,46 @@ function calculateAll() {
 }
 
 // ==========================================
+// SHOP ATAP ESTIMATE
+// ==========================================
+
+function estimateShopATAP(originalUsage, batteryCount) {
+    const settings = SHOP_ATAP_ESTIMATE;
+
+    const baseExport =
+        originalUsage * settings.exportRatio;
+
+    const exportMultiplier = Math.max(
+        0,
+        1 - batteryCount *
+        settings.batteryExportReduction
+    );
+
+    const estimatedExport = round2(
+        baseExport * exportMultiplier
+    );
+
+    const estimatedCredit = round2(
+        estimatedExport * settings.averageSMP
+    );
+
+    return {
+        estimatedExport,
+        averageSMP: settings.averageSMP,
+        estimatedCredit
+    };
+}
+
+// ==========================================
 // SHOP BILL
 // ==========================================
 
-function shopBill(usage, isSolar = false) {
+function shopBill(
+    usage,
+    isSolar = false,
+    originalUsage = usage,
+    batteryCount = 0
+) {
     const tenaga = round2(
         usage * SHOP_RATE.tenaga
     );
@@ -424,8 +463,6 @@ function shopBill(usage, isSolar = false) {
 
     const retail = SHOP_RATE.retail;
 
-    // Estimated KWTBB base, based on the
-    // earlier Low Voltage shop bill.
     const kwtbbBase =
         usage * (
             SHOP_RATE.tenaga +
@@ -446,11 +483,29 @@ function shopBill(usage, isSolar = false) {
         kwtbb
     );
 
-    // No export/SMP inputs are available.
-    // Therefore no ATAP credit is assumed.
-    const atapCredit = 0;
+    const atap = isSolar
+        ? estimateShopATAP(
+            originalUsage,
+            batteryCount
+        )
+        : {
+            estimatedExport: 0,
+            averageSMP: SHOP_ATAP_ESTIMATE.averageSMP,
+            estimatedCredit: 0
+        };
 
-    const afterATAP = beforeATAP;
+    // Simplified sales model:
+    // Estimated credit cannot reduce
+    // the current bill below zero.
+    const atapCredit = Math.min(
+        beforeATAP,
+        atap.estimatedCredit
+    );
+
+    const afterATAP = Math.max(
+        0,
+        round2(beforeATAP - atapCredit)
+    );
 
     return {
         usage,
@@ -461,6 +516,8 @@ function shopBill(usage, isSolar = false) {
         retail,
         kwtbb,
         beforeATAP,
+        estimatedExport: atap.estimatedExport,
+        averageSMP: atap.averageSMP,
         atapCredit,
         afterATAP
     };
@@ -509,8 +566,16 @@ function shopCard(title, subtitle, bill, solar) {
                 "atap-before"
             ) +
             detail(
-                "Kredit ATAP Suria (Not Included)",
-                formatRM(bill.atapCredit),
+                "Estimated Solar Export (10% Model)",
+                formatKWh(bill.estimatedExport)
+            ) +
+            detail(
+                "Assumed Average SMP",
+                formatRM(bill.averageSMP) + "/kWh"
+            ) +
+            detail(
+                "Kredit ATAP Suria (Estimated)",
+                "- " + formatRM(bill.atapCredit),
                 "atap-credit"
             ) +
             detail(
@@ -567,7 +632,9 @@ function calculateShop() {
 
         const after = shopBill(
             remaining,
-            true
+            true,
+            usage,
+            count
         );
 
         results += shopCard(
