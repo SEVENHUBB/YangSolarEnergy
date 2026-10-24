@@ -7,8 +7,8 @@
 
     <title>Skyworth Solar Calculator</title>
 
-    <link rel="stylesheet" href="style.css?v=10">
-<script src="script.js?v=11" defer></script>
+    <link rel="stylesheet" href="style.css?v=12">
+    <script src="script.js?v=12" defer></script>
 </head>
 
 <body>
@@ -69,6 +69,11 @@
                     placeholder="Example: 1000"
                     oninput="calculateAll()">
             </div>
+
+            <p class="info-note">
+                Residential savings are based on an estimated
+                solar usage and ATAP model. Actual billing may differ.
+            </p>
         </section>
 
         <section class="results-section">
@@ -115,9 +120,10 @@
             </div>
 
             <p class="info-note">
-                This calculator uses the estimated
-                Low Voltage General commercial tariff.
-                Actual AFA and billing adjustments may vary.
+                Estimated Low Voltage General commercial tariff.
+                Solar ATAP uses an assumed export ratio of 10%
+                and Average SMP of RM0.20/kWh.
+                Actual export, SMP, AFA and TNB settlement may differ.
             </p>
         </section>
 
@@ -308,8 +314,9 @@
 
             <p class="info-note">
                 Factory calculation is an estimate.
-                Maximum Demand is assumed unchanged
-                after solar installation.
+                Maximum Demand is assumed unchanged after solar.
+                Export credits, power-factor penalties and
+                additional taxes are not included.
             </p>
         </section>
 
