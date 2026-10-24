@@ -1,8 +1,4 @@
 
-/* =========================
-   GLOBAL STYLE
-========================= */
-
 :root {
     --primary: #087f5b;
     --primary-dark: #065f46;
@@ -12,7 +8,7 @@
     --text: #1f2937;
     --muted: #6b7280;
     --border: #e5e7eb;
-    --shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+    --shadow: 0 6px 24px rgba(0,0,0,0.06);
 }
 
 * {
@@ -34,9 +30,7 @@ body {
     margin: 0 auto;
 }
 
-/* =========================
-   HEADER
-========================= */
+/* HEADER */
 
 .header {
     background: linear-gradient(
@@ -59,9 +53,39 @@ body {
     opacity: 0.9;
 }
 
-/* =========================
-   INPUT SECTION
-========================= */
+/* PAGE SWITCHING BUTTONS */
+
+.page-nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.nav-button {
+    background: white;
+    color: var(--primary-dark);
+    border: 2px solid #cde6da;
+    padding: 16px 12px;
+    font-size: 17px;
+    font-weight: bold;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.nav-button:hover,
+.nav-button.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+[hidden] {
+    display: none !important;
+}
+
+/* INPUT */
 
 .input-section {
     background: white;
@@ -81,6 +105,12 @@ body {
     margin-bottom: 22px;
 }
 
+.input-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
 .input-group {
     display: flex;
     flex-direction: column;
@@ -91,26 +121,37 @@ body {
     font-weight: bold;
 }
 
-.input-group input {
+.input-group input,
+.input-group select {
     width: 100%;
     padding: 15px;
-    font-size: 20px;
+    font-size: 18px;
     border: 2px solid var(--border);
     border-radius: 10px;
     outline: none;
-    transition: 0.2s;
+    background: white;
 }
 
-.input-group input:focus {
+.input-group input:focus,
+.input-group select:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(8, 127, 91, 0.1);
+    box-shadow: 0 0 0 4px rgba(8,127,91,0.1);
 }
 
-/* =========================
-   RESULTS SECTION
-========================= */
+.info-note {
+    margin-top: 18px;
+    padding: 15px 18px;
+    border-radius: 10px;
+    background: #f0f7f4;
+    border-left: 4px solid var(--primary);
+    font-size: 13px;
+    color: #475569;
+}
 
-.results-section {
+/* RESULTS */
+
+.results-section,
+.savings-section {
     margin-top: 40px;
 }
 
@@ -139,7 +180,7 @@ body {
 
 .result-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
 .result-card h3 {
@@ -159,9 +200,7 @@ body {
     margin-bottom: 20px;
 }
 
-/* =========================
-   CALCULATION DETAILS
-========================= */
+/* DETAILS */
 
 .details {
     border-top: 1px solid var(--border);
@@ -181,20 +220,14 @@ body {
 .details span {
     font-weight: bold;
     text-align: right;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
 }
 
 .details p:last-child {
     border-bottom: none;
 }
 
-/* =========================
-   SAVINGS SECTION
-========================= */
-
-.savings-section {
-    margin-top: 40px;
-}
+/* SAVINGS */
 
 .savings-grid {
     display: grid;
@@ -221,9 +254,7 @@ body {
     font-size: 29px;
 }
 
-/* =========================
-   PRINT BUTTON
-========================= */
+/* PRINT */
 
 .print-section {
     text-align: center;
@@ -239,16 +270,13 @@ body {
     font-weight: bold;
     border-radius: 10px;
     cursor: pointer;
-    transition: 0.2s;
 }
 
 .print-section button:hover {
     background: var(--primary-dark);
 }
 
-/* =========================
-   FOOTER
-========================= */
+/* FOOTER */
 
 footer {
     background: #1f2937;
@@ -262,23 +290,14 @@ footer p {
     margin-bottom: 5px;
 }
 
-/* =========================
-   TABLET
-========================= */
+/* RESPONSIVE */
 
 @media (max-width: 900px) {
-    .results-grid {
-        grid-template-columns: 1fr;
-    }
-
+    .results-grid,
     .savings-grid {
         grid-template-columns: 1fr;
     }
 }
-
-/* =========================
-   MOBILE
-========================= */
 
 @media (max-width: 600px) {
     .header {
@@ -289,12 +308,22 @@ footer p {
         font-size: 24px;
     }
 
-    .input-section {
+    .input-section,
+    .result-card {
         padding: 20px;
     }
 
-    .result-card {
-        padding: 20px;
+    .input-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .nav-button {
+        font-size: 14px;
+        padding: 13px 5px;
+    }
+
+    .page-nav {
+        gap: 7px;
     }
 
     .result-card > h2 {
@@ -305,18 +334,12 @@ footer p {
         font-size: 12px;
     }
 
-    .details span {
-        white-space: normal;
-    }
-
     .saving-card h2 {
         font-size: 25px;
     }
 }
 
-/* =========================
-   PRINT / SAVE AS PDF
-========================= */
+/* PRINT / SAVE AS PDF */
 
 @media print {
     body {
@@ -329,14 +352,19 @@ footer p {
         padding: 15px 0;
     }
 
+    .page-nav,
+    .print-section {
+        display: none !important;
+    }
+
+    .calculator-page[hidden] {
+        display: none !important;
+    }
+
     .input-section,
     .result-card,
     .saving-card {
         box-shadow: none;
-    }
-
-    .print-section {
-        display: none;
     }
 
     .result-card,
