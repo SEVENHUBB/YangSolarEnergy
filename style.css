@@ -8,7 +8,7 @@
     --text: #1f2937;
     --muted: #6b7280;
     --border: #e5e7eb;
-    --shadow: 0 6px 24px rgba(0, 0, 0, .06);
+    --shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
 }
 
 * {
@@ -48,7 +48,7 @@ body {
 
 .header p {
     margin-top: 6px;
-    opacity: .9;
+    opacity: 0.9;
 }
 
 /* NAVIGATION */
@@ -69,7 +69,7 @@ body {
     font-weight: bold;
     border-radius: 14px;
     cursor: pointer;
-    transition: .2s;
+    transition: 0.2s;
 }
 
 .nav-button:hover,
@@ -83,7 +83,7 @@ body {
     display: none !important;
 }
 
-/* INPUT SECTIONS */
+/* INPUT */
 
 .input-section {
     background: white;
@@ -133,10 +133,10 @@ body {
 .input-group input:focus,
 .input-group select:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(8, 127, 91, .1);
+    box-shadow: 0 0 0 4px rgba(8, 127, 91, 0.1);
 }
 
-/* AFA AND ATAP SETTINGS */
+/* SETTINGS */
 
 .settings-panel {
     margin-top: 25px;
@@ -148,13 +148,7 @@ body {
 
 .settings-panel h3 {
     color: var(--primary-dark);
-    margin-bottom: 6px;
-}
-
-.settings-panel > p {
-    color: var(--muted);
-    font-size: 14px;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .settings-panel .input-columns + .input-columns {
@@ -172,7 +166,7 @@ body {
 }
 
 .validation-message {
-    color: #b42318 !important;
+    color: #b42318;
     font-size: 13px;
     margin-top: 12px;
 }
@@ -208,12 +202,6 @@ body {
     box-shadow: var(--shadow);
     border: 1px solid var(--border);
     min-width: 0;
-    transition: .2s;
-}
-
-.result-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, .1);
 }
 
 .result-card h3 {
@@ -258,7 +246,7 @@ body {
     overflow-wrap: anywhere;
 }
 
-/* IMPORTANT ATAP ROWS */
+/* ATAP */
 
 .details .atap-before {
     margin-top: 12px;
@@ -311,7 +299,7 @@ body {
     font-size: 29px;
 }
 
-/* PRINT BUTTON */
+/* PRINT */
 
 .print-section {
     text-align: center;
@@ -347,7 +335,7 @@ footer p {
     margin-bottom: 5px;
 }
 
-/* TABLET */
+/* RESPONSIVE */
 
 @media (max-width: 900px) {
     .results-grid,
@@ -355,8 +343,6 @@ footer p {
         grid-template-columns: 1fr;
     }
 }
-
-/* MOBILE */
 
 @media (max-width: 600px) {
     .header {
@@ -401,8 +387,6 @@ footer p {
         font-size: 25px;
     }
 }
-
-/* PRINT / SAVE PDF */
 
 @media print {
     body {
