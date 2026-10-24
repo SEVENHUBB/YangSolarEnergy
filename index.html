@@ -7,8 +7,8 @@
 
     <title>Skyworth Solar Calculator</title>
 
-    <link rel="stylesheet" href="style.css?v=12">
-    <script src="script.js?v=12" defer></script>
+    <link rel="stylesheet" href="style.css?v=13">
+    <script src="script.js?v=13" defer></script>
 </head>
 
 <body>
@@ -21,6 +21,7 @@
 </header>
 
 <nav class="page-nav container">
+
     <button
         class="nav-button active"
         data-page="house"
@@ -41,6 +42,7 @@
         onclick="switchPage('factory')">
         🏭 Factory
     </button>
+
 </nav>
 
 <main class="container">
@@ -71,19 +73,25 @@
             </div>
 
             <p class="info-note">
-                Residential savings are based on an estimated
-                solar usage and ATAP model. Actual billing may differ.
+                Estimated residential electricity and solar savings.
+                Actual TNB charges and ATAP settlement may differ.
             </p>
         </section>
 
         <section class="results-section">
             <h2>Solar Savings Comparison</h2>
-            <div class="results-grid" id="houseResults"></div>
+            <div
+                class="results-grid"
+                id="houseResults">
+            </div>
         </section>
 
         <section class="savings-section">
             <h2>Estimated Monthly Savings</h2>
-            <div class="savings-grid" id="houseSavings"></div>
+            <div
+                class="savings-grid"
+                id="houseSavings">
+            </div>
         </section>
 
         <section class="print-section">
@@ -120,21 +128,27 @@
             </div>
 
             <p class="info-note">
-                Estimated Low Voltage General commercial tariff.
-                Solar ATAP uses an assumed export ratio of 10%
-                and Average SMP of RM0.20/kWh.
-                Actual export, SMP, AFA and TNB settlement may differ.
+                Low Voltage General commercial tariff estimate.
+                Selepas ATAP uses a sales simulation that
+                deducts the Tenaga charge.
+                Actual ATAP credits and AFA may differ.
             </p>
         </section>
 
         <section class="results-section">
             <h2>Solar Savings Comparison</h2>
-            <div class="results-grid" id="shopResults"></div>
+            <div
+                class="results-grid"
+                id="shopResults">
+            </div>
         </section>
 
         <section class="savings-section">
             <h2>Estimated Monthly Savings</h2>
-            <div class="savings-grid" id="shopSavings"></div>
+            <div
+                class="savings-grid"
+                id="shopSavings">
+            </div>
         </section>
 
         <section class="print-section">
@@ -179,6 +193,7 @@
                     <select
                         id="factoryVoltage"
                         onchange="calculateFactory()">
+
                         <option value="LV">
                             Low Voltage General
                         </option>
@@ -186,11 +201,14 @@
                         <option value="MV">
                             Medium Voltage General
                         </option>
+
                     </select>
                 </div>
 
-                <div class="input-group"
-                     id="factoryMDGroup" hidden>
+                <div
+                    class="input-group"
+                    id="factoryMDGroup"
+                    hidden>
 
                     <label for="factoryMD">
                         Maximum Demand (kW)
@@ -208,6 +226,7 @@
             </div>
 
             <div class="settings-panel">
+
                 <h3>AFA Settings</h3>
 
                 <div class="input-columns">
@@ -220,6 +239,7 @@
                         <select
                             id="factoryAFAMode"
                             onchange="updateFactoryAFAMode()">
+
                             <option value="single">
                                 Single AFA Rate
                             </option>
@@ -227,11 +247,13 @@
                             <option value="split">
                                 Split AFA (Two Rates)
                             </option>
+
                         </select>
                     </div>
 
-                    <div class="input-group"
-                         id="factorySingleAFAGroup">
+                    <div
+                        class="input-group"
+                        id="factorySingleAFAGroup">
 
                         <label for="factoryAFARate">
                             AFA Rate (RM/kWh)
@@ -310,24 +332,31 @@
                     class="validation-message"
                     id="factoryAFAWarning">
                 </p>
+
             </div>
 
             <p class="info-note">
-                Factory calculation is an estimate.
+                Factory results are estimates.
                 Maximum Demand is assumed unchanged after solar.
-                Export credits, power-factor penalties and
-                additional taxes are not included.
+                Actual tariffs, taxes and other adjustments may differ.
             </p>
+
         </section>
 
         <section class="results-section">
             <h2>Solar Savings Comparison</h2>
-            <div class="results-grid" id="factoryResults"></div>
+            <div
+                class="results-grid"
+                id="factoryResults">
+            </div>
         </section>
 
         <section class="savings-section">
             <h2>Estimated Monthly Savings</h2>
-            <div class="savings-grid" id="factorySavings"></div>
+            <div
+                class="savings-grid"
+                id="factorySavings">
+            </div>
         </section>
 
         <section class="print-section">
@@ -343,7 +372,7 @@
 <footer>
     <p>Skyworth Solar Calculator</p>
     <p>
-        All calculations are estimates.
+        All calculations are estimates for illustration.
         Actual TNB bills and Solar ATAP settlement may differ.
     </p>
 </footer>
