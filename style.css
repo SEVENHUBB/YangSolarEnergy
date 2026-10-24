@@ -175,7 +175,7 @@ body {
     display: none;
 }
 
-/* RESULT CARDS */
+/* RESULTS */
 
 .results-section,
 .savings-section {
@@ -246,7 +246,7 @@ body {
     overflow-wrap: anywhere;
 }
 
-/* ATAP */
+/* ATAP DETAILS */
 
 .details .atap-before {
     margin-top: 12px;
@@ -335,7 +335,7 @@ footer p {
     margin-bottom: 5px;
 }
 
-/* RESPONSIVE */
+/* MOBILE */
 
 @media (max-width: 900px) {
     .results-grid,
