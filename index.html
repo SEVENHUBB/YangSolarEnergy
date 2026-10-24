@@ -5,198 +5,483 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skyworth Solar Calculator</title>
-    <link rel="stylesheet" href="style.css?v=8">
-    <script src="script.js?v=8" defer></script>
+    <link rel="stylesheet" href="style.css?v=9">
+    <script src="script.js?v=9" defer></script>
 </head>
 <body>
-    <header class="header">
-        <div class="container">
-            <h1>SKYWORTH SOLAR</h1>
-            <p>Solar Electricity Savings Calculator</p>
-        </div>
-    </header>
 
-    <nav class="page-nav container" aria-label="Calculator type">
-        <button class="nav-button active" data-page="house" onclick="switchPage('house')">🏠 House</button>
-        <button class="nav-button" data-page="shop" onclick="switchPage('shop')">🏪 Shop</button>
-        <button class="nav-button" data-page="factory" onclick="switchPage('factory')">🏭 Factory</button>
-    </nav>
+<header class="header">
+    <div class="container">
+        <h1>SKYWORTH SOLAR</h1>
+        <p>Solar Electricity Savings Calculator</p>
+    </div>
+</header>
 
-    <main class="container">
-        <!-- HOUSE -->
-        <div id="housePage" class="calculator-page">
-            <section class="input-section">
-                <h2>Residential Calculator</h2>
-                <p>Enter the monthly electricity consumption from the customer's TNB bill.</p>
+<nav class="page-nav container">
+    <button class="nav-button active"
+        data-page="house"
+        onclick="switchPage('house')">
+        🏠 House
+    </button>
+    <button class="nav-button"
+        data-page="shop"
+        onclick="switchPage('shop')">
+        🏪 Shop
+    </button>
+    <button class="nav-button"
+        data-page="factory"
+        onclick="switchPage('factory')">
+        🏭 Factory
+    </button>
+</nav>
+
+<main class="container">
+
+    <!-- HOUSE PAGE -->
+    <div id="housePage" class="calculator-page">
+        <section class="input-section">
+            <h2>Residential Calculator</h2>
+            <p>Enter the monthly electricity consumption
+                from the customer's TNB bill.</p>
+
+            <div class="input-group">
+                <label for="jumlah">
+                    Jumlah Penggunaan Anda (kWh)
+                </label>
+                <input
+                    type="number"
+                    id="jumlah"
+                    min="0"
+                    step="any"
+                    placeholder="Example: 1653"
+                    oninput="calculateAll()">
+            </div>
+        </section>
+
+        <section class="results-section">
+            <h2>Solar Savings Comparison</h2>
+            <div class="results-grid" id="houseResults"></div>
+        </section>
+
+        <section class="savings-section">
+            <h2>Estimated Monthly Savings</h2>
+            <div class="savings-grid" id="houseSavings"></div>
+        </section>
+
+        <section class="print-section">
+            <button onclick="window.print()">
+                Print / Save as PDF
+            </button>
+        </section>
+    </div>
+
+    <!-- SHOP PAGE -->
+    <div id="shopPage" class="calculator-page" hidden>
+        <section class="input-section">
+            <h2>Commercial Calculator</h2>
+            <p>Shop Electricity Bill & Solar Savings</p>
+
+            <div class="input-columns">
                 <div class="input-group">
-                    <label for="jumlah">Jumlah Penggunaan Anda (kWh)</label>
-                    <input type="number" id="jumlah" min="0" step="any" placeholder="Example: 1653" oninput="calculateAll()">
+                    <label for="shopUsage">
+                        Monthly Electricity Usage (kWh)
+                    </label>
+                    <input
+                        type="number"
+                        id="shopUsage"
+                        min="0"
+                        step="any"
+                        value="209"
+                        oninput="calculateNonDomestic('shop')">
                 </div>
-            </section>
-            <section class="results-section">
-                <h2>Solar Savings Comparison</h2>
-                <div class="results-grid" id="houseResults"></div>
-            </section>
-            <section class="savings-section">
-                <h2>Estimated Monthly Savings</h2>
-                <div class="savings-grid" id="houseSavings"></div>
-            </section>
-            <section class="print-section">
-                <button onclick="window.print()">Print / Save as PDF</button>
-            </section>
-        </div>
 
-        <!-- SHOP -->
-        <div id="shopPage" class="calculator-page" hidden>
-            <section class="input-section">
-                <h2>Commercial Calculator</h2>
-                <p>Shop Electricity Bill & Solar Savings</p>
+                <div class="input-group">
+                    <label for="shopVoltage">
+                        Supply Voltage
+                    </label>
+                    <select
+                        id="shopVoltage"
+                        onchange="calculateNonDomestic('shop')">
+                        <option value="LV">
+                            Low Voltage General
+                        </option>
+                        <option value="MV">
+                            Medium Voltage General
+                        </option>
+                    </select>
+                </div>
+
+                <div class="input-group" id="shopMDGroup" hidden>
+                    <label for="shopMD">
+                        Maximum Demand (kW)
+                    </label>
+                    <input
+                        type="number"
+                        id="shopMD"
+                        min="0"
+                        step="any"
+                        placeholder="Example: 50"
+                        oninput="calculateNonDomestic('shop')">
+                </div>
+            </div>
+
+            <!-- SHOP AFA -->
+            <div class="settings-panel">
+                <h3>AFA Settings</h3>
+                <p>
+                    Enter the applicable AFA rate.
+                    You can split usage across two billing periods.
+                </p>
+
                 <div class="input-columns">
                     <div class="input-group">
-                        <label for="shopUsage">Monthly Electricity Usage (kWh)</label>
-                        <input type="number" id="shopUsage" min="0" step="any" value="209" oninput="calculateNonDomestic('shop')">
-                    </div>
-                    <div class="input-group">
-                        <label for="shopVoltage">Supply Voltage</label>
-                        <select id="shopVoltage" onchange="calculateNonDomestic('shop')">
-                            <option value="LV">Low Voltage General</option>
-                            <option value="MV">Medium Voltage General</option>
+                        <label for="shopAFAMode">
+                            AFA Calculation
+                        </label>
+                        <select
+                            id="shopAFAMode"
+                            onchange="updateAFAMode('shop')">
+                            <option value="split">
+                                Split AFA (Two Rates)
+                            </option>
+                            <option value="single">
+                                Single AFA Rate
+                            </option>
                         </select>
                     </div>
-                    <div class="input-group" id="shopMDGroup" hidden>
-                        <label for="shopMD">Maximum Demand (kW)</label>
-                        <input type="number" id="shopMD" min="0" step="any" placeholder="Example: 50" oninput="calculateNonDomestic('shop')">
+
+                    <div class="input-group"
+                         id="shopSingleAFAGroup" hidden>
+                        <label for="shopAFARate">
+                            AFA Rate (RM/kWh)
+                        </label>
+                        <input
+                            type="number"
+                            id="shopAFARate"
+                            step="0.0001"
+                            value="0.0361"
+                            oninput="calculateNonDomestic('shop')">
                     </div>
                 </div>
 
-                <div class="settings-panel">
-                    <h3>AFA Settings</h3>
-                    <p>Use a single rate, or split the usage between two AFA rates as shown in your October 2026 TNB bill.</p>
-                    <div class="input-columns">
-                        <div class="input-group">
-                            <label for="shopAFAMode">AFA Calculation</label>
-                            <select id="shopAFAMode" onchange="updateAFAMode('shop')">
-                                <option value="split">Split AFA (Two Rates)</option>
-                                <option value="single">Single AFA Rate</option>
-                            </select>
-                        </div>
-                        <div class="input-group" id="shopSingleAFAGroup" hidden>
-                            <label for="shopAFARate">AFA Rate (RM/kWh)</label>
-                            <input type="number" id="shopAFARate" min="-1" step="0.0001" value="0.0361" oninput="calculateNonDomestic('shop')">
-                        </div>
+                <div id="shopSplitAFAGroup" class="input-columns">
+                    <div class="input-group">
+                        <label for="shopAFA1Usage">
+                            Period 1 Usage (kWh)
+                        </label>
+                        <input
+                            type="number"
+                            id="shopAFA1Usage"
+                            min="0"
+                            step="any"
+                            value="188"
+                            oninput="calculateNonDomestic('shop')">
                     </div>
-                    <div id="shopSplitAFAGroup" class="input-columns">
-                        <div class="input-group">
-                            <label for="shopAFA1Usage">AFA Period 1 Usage (kWh)</label>
-                            <input type="number" id="shopAFA1Usage" min="0" step="any" value="188" oninput="calculateNonDomestic('shop')">
-                        </div>
-                        <div class="input-group">
-                            <label for="shopAFA1Rate">Period 1 Rate (RM/kWh)</label>
-                            <input type="number" id="shopAFA1Rate" step="0.0001" value="0.0367" oninput="calculateNonDomestic('shop')">
-                        </div>
-                        <div class="input-group">
-                            <label for="shopAFA2Usage">AFA Period 2 Usage (kWh)</label>
-                            <input type="number" id="shopAFA2Usage" min="0" step="any" value="21" oninput="calculateNonDomestic('shop')">
-                        </div>
-                        <div class="input-group">
-                            <label for="shopAFA2Rate">Period 2 Rate (RM/kWh)</label>
-                            <input type="number" id="shopAFA2Rate" step="0.0001" value="0.0361" oninput="calculateNonDomestic('shop')">
-                        </div>
-                    </div>
-                    <p class="validation-message" id="shopAFAWarning"></p>
-                </div>
-                <p class="info-note">Solar usage is estimated at 60% of original usage, minus 450 kWh per battery. AFA allocation after solar is proportional to the original billing periods. Actual solar export credits are not included in this non-domestic estimate.</p>
-            </section>
-            <section class="results-section">
-                <h2>Solar Savings Comparison</h2>
-                <div class="results-grid" id="shopResults"></div>
-            </section>
-            <section class="savings-section">
-                <h2>Estimated Monthly Savings</h2>
-                <div class="savings-grid" id="shopSavings"></div>
-            </section>
-            <section class="print-section">
-                <button onclick="window.print()">Print / Save as PDF</button>
-            </section>
-        </div>
 
-        <!-- FACTORY -->
-        <div id="factoryPage" class="calculator-page" hidden>
-            <section class="input-section">
-                <h2>Industrial Calculator</h2>
-                <p>Factory Electricity Bill & Solar Savings</p>
+                    <div class="input-group">
+                        <label for="shopAFA1Rate">
+                            Period 1 AFA Rate (RM/kWh)
+                        </label>
+                        <input
+                            type="number"
+                            id="shopAFA1Rate"
+                            step="0.0001"
+                            value="0.0367"
+                            oninput="calculateNonDomestic('shop')">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="shopAFA2Usage">
+                            Period 2 Usage (kWh)
+                        </label>
+                        <input
+                            type="number"
+                            id="shopAFA2Usage"
+                            min="0"
+                            step="any"
+                            value="21"
+                            oninput="calculateNonDomestic('shop')">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="shopAFA2Rate">
+                            Period 2 AFA Rate (RM/kWh)
+                        </label>
+                        <input
+                            type="number"
+                            id="shopAFA2Rate"
+                            step="0.0001"
+                            value="0.0361"
+                            oninput="calculateNonDomestic('shop')">
+                    </div>
+                </div>
+
+                <p class="validation-message"
+                   id="shopAFAWarning"></p>
+            </div>
+
+            <!-- SHOP ATAP -->
+            <div class="settings-panel">
+                <h3>Solar ATAP Settings</h3>
+                <p>
+                    Enter estimated eligible solar export
+                    and Average SMP for each solar package.
+                </p>
+
                 <div class="input-columns">
                     <div class="input-group">
-                        <label for="factoryUsage">Monthly Electricity Usage (kWh)</label>
-                        <input type="number" id="factoryUsage" min="0" step="any" placeholder="Example: 10000" oninput="calculateNonDomestic('factory')">
+                        <label for="shopSMP">
+                            Average SMP (RM/kWh)
+                        </label>
+                        <input
+                            type="number"
+                            id="shopSMP"
+                            min="0"
+                            step="0.0001"
+                            value="0.20"
+                            oninput="calculateNonDomestic('shop')">
                     </div>
+
                     <div class="input-group">
-                        <label for="factoryVoltage">Supply Voltage</label>
-                        <select id="factoryVoltage" onchange="calculateNonDomestic('factory')">
-                            <option value="LV">Low Voltage General</option>
-                            <option value="MV">Medium Voltage General</option>
+                        <label for="shopExport0">
+                            No Battery Export (kWh)
+                        </label>
+                        <input
+                            type="number"
+                            id="shopExport0"
+                            min="0"
+                            step="any"
+                            value="0"
+                            oninput="calculateNonDomestic('shop')">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="shopExport1">
+                            1 Battery Export (kWh)
+                        </label>
+                        <input
+                            type="number"
+                            id="shopExport1"
+                            min="0"
+                            step="any"
+                            value="0"
+                            oninput="calculateNonDomestic('shop')">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="shopExport2">
+                            2 Batteries Export (kWh)
+                        </label>
+                        <input
+                            type="number"
+                            id="shopExport2"
+                            min="0"
+                            step="any"
+                            value="0"
+                            oninput="calculateNonDomestic('shop')">
+                    </div>
+                </div>
+            </div>
+
+            <p class="info-note">
+                Solar usage is estimated using 60% of the
+                original consumption, minus 450 kWh per battery.
+                Export credits use the entered Average SMP.
+                Actual TNB settlement may differ.
+            </p>
+        </section>
+
+        <section class="results-section">
+            <h2>Solar Savings Comparison</h2>
+            <div class="results-grid" id="shopResults"></div>
+        </section>
+
+        <section class="savings-section">
+            <h2>Estimated Monthly Savings</h2>
+            <div class="savings-grid" id="shopSavings"></div>
+        </section>
+
+        <section class="print-section">
+            <button onclick="window.print()">
+                Print / Save as PDF
+            </button>
+        </section>
+    </div>
+
+    <!-- FACTORY PAGE -->
+    <div id="factoryPage" class="calculator-page" hidden>
+        <section class="input-section">
+            <h2>Industrial Calculator</h2>
+            <p>Factory Electricity Bill & Solar Savings</p>
+
+            <div class="input-columns">
+                <div class="input-group">
+                    <label for="factoryUsage">
+                        Monthly Electricity Usage (kWh)
+                    </label>
+                    <input
+                        type="number"
+                        id="factoryUsage"
+                        min="0"
+                        step="any"
+                        placeholder="Example: 10000"
+                        oninput="calculateNonDomestic('factory')">
+                </div>
+
+                <div class="input-group">
+                    <label for="factoryVoltage">
+                        Supply Voltage
+                    </label>
+                    <select
+                        id="factoryVoltage"
+                        onchange="calculateNonDomestic('factory')">
+                        <option value="LV">
+                            Low Voltage General
+                        </option>
+                        <option value="MV">
+                            Medium Voltage General
+                        </option>
+                    </select>
+                </div>
+
+                <div class="input-group"
+                     id="factoryMDGroup" hidden>
+                    <label for="factoryMD">
+                        Maximum Demand (kW)
+                    </label>
+                    <input
+                        type="number"
+                        id="factoryMD"
+                        min="0"
+                        step="any"
+                        placeholder="Example: 50"
+                        oninput="calculateNonDomestic('factory')">
+                </div>
+            </div>
+
+            <div class="settings-panel">
+                <h3>AFA Settings</h3>
+
+                <div class="input-columns">
+                    <div class="input-group">
+                        <label for="factoryAFAMode">
+                            AFA Calculation
+                        </label>
+                        <select
+                            id="factoryAFAMode"
+                            onchange="updateAFAMode('factory')">
+                            <option value="single">
+                                Single AFA Rate
+                            </option>
+                            <option value="split">
+                                Split AFA (Two Rates)
+                            </option>
                         </select>
                     </div>
-                    <div class="input-group" id="factoryMDGroup" hidden>
-                        <label for="factoryMD">Maximum Demand (kW)</label>
-                        <input type="number" id="factoryMD" min="0" step="any" placeholder="Example: 50" oninput="calculateNonDomestic('factory')">
+
+                    <div class="input-group"
+                         id="factorySingleAFAGroup">
+                        <label for="factoryAFARate">
+                            AFA Rate (RM/kWh)
+                        </label>
+                        <input
+                            type="number"
+                            id="factoryAFARate"
+                            step="0.0001"
+                            value="0.0361"
+                            oninput="calculateNonDomestic('factory')">
                     </div>
                 </div>
 
-                <div class="settings-panel">
-                    <h3>AFA Settings</h3>
-                    <div class="input-columns">
-                        <div class="input-group">
-                            <label for="factoryAFAMode">AFA Calculation</label>
-                            <select id="factoryAFAMode" onchange="updateAFAMode('factory')">
-                                <option value="single">Single AFA Rate</option>
-                                <option value="split">Split AFA (Two Rates)</option>
-                            </select>
-                        </div>
-                        <div class="input-group" id="factorySingleAFAGroup">
-                            <label for="factoryAFARate">AFA Rate (RM/kWh)</label>
-                            <input type="number" id="factoryAFARate" step="0.0001" value="0.0361" oninput="calculateNonDomestic('factory')">
-                        </div>
+                <div id="factorySplitAFAGroup"
+                     class="input-columns" hidden>
+                    <div class="input-group">
+                        <label for="factoryAFA1Usage">
+                            Period 1 Usage (kWh)
+                        </label>
+                        <input
+                            type="number"
+                            id="factoryAFA1Usage"
+                            min="0"
+                            step="any"
+                            oninput="calculateNonDomestic('factory')">
                     </div>
-                    <div id="factorySplitAFAGroup" class="input-columns" hidden>
-                        <div class="input-group">
-                            <label for="factoryAFA1Usage">Period 1 Usage (kWh)</label>
-                            <input type="number" id="factoryAFA1Usage" min="0" step="any" oninput="calculateNonDomestic('factory')">
-                        </div>
-                        <div class="input-group">
-                            <label for="factoryAFA1Rate">Period 1 Rate (RM/kWh)</label>
-                            <input type="number" id="factoryAFA1Rate" step="0.0001" value="0.0367" oninput="calculateNonDomestic('factory')">
-                        </div>
-                        <div class="input-group">
-                            <label for="factoryAFA2Usage">Period 2 Usage (kWh)</label>
-                            <input type="number" id="factoryAFA2Usage" min="0" step="any" oninput="calculateNonDomestic('factory')">
-                        </div>
-                        <div class="input-group">
-                            <label for="factoryAFA2Rate">Period 2 Rate (RM/kWh)</label>
-                            <input type="number" id="factoryAFA2Rate" step="0.0001" value="0.0361" oninput="calculateNonDomestic('factory')">
-                        </div>
-                    </div>
-                    <p class="validation-message" id="factoryAFAWarning"></p>
-                </div>
-                <p class="info-note">Industrial estimates use the selected voltage tariff. For Medium Voltage, Maximum Demand is assumed unchanged after solar. Power factor penalties, ToU, tax and actual solar export credits are excluded.</p>
-            </section>
-            <section class="results-section">
-                <h2>Solar Savings Comparison</h2>
-                <div class="results-grid" id="factoryResults"></div>
-            </section>
-            <section class="savings-section">
-                <h2>Estimated Monthly Savings</h2>
-                <div class="savings-grid" id="factorySavings"></div>
-            </section>
-            <section class="print-section">
-                <button onclick="window.print()">Print / Save as PDF</button>
-            </section>
-        </div>
-    </main>
 
-    <footer>
-        <p>Skyworth Solar Calculator</p>
-        <p>Estimates use configured tariff rates and solar assumptions. Actual TNB bills may differ.</p>
-    </footer>
+                    <div class="input-group">
+                        <label for="factoryAFA1Rate">
+                            Period 1 AFA Rate (RM/kWh)
+                        </label>
+                        <input
+                            type="number"
+                            id="factoryAFA1Rate"
+                            step="0.0001"
+                            value="0.0367"
+                            oninput="calculateNonDomestic('factory')">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="factoryAFA2Usage">
+                            Period 2 Usage (kWh)
+                        </label>
+                        <input
+                            type="number"
+                            id="factoryAFA2Usage"
+                            min="0"
+                            step="any"
+                            oninput="calculateNonDomestic('factory')">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="factoryAFA2Rate">
+                            Period 2 AFA Rate (RM/kWh)
+                        </label>
+                        <input
+                            type="number"
+                            id="factoryAFA2Rate"
+                            step="0.0001"
+                            value="0.0361"
+                            oninput="calculateNonDomestic('factory')">
+                    </div>
+                </div>
+
+                <p class="validation-message"
+                   id="factoryAFAWarning"></p>
+            </div>
+
+            <p class="info-note">
+                Factory calculation is an estimate.
+                Medium Voltage Maximum Demand is assumed
+                unchanged after solar. Export credits,
+                power-factor penalties and taxes are excluded.
+            </p>
+        </section>
+
+        <section class="results-section">
+            <h2>Solar Savings Comparison</h2>
+            <div class="results-grid" id="factoryResults"></div>
+        </section>
+
+        <section class="savings-section">
+            <h2>Estimated Monthly Savings</h2>
+            <div class="savings-grid" id="factorySavings"></div>
+        </section>
+
+        <section class="print-section">
+            <button onclick="window.print()">
+                Print / Save as PDF
+            </button>
+        </section>
+    </div>
+
+</main>
+
+<footer>
+    <p>Skyworth Solar Calculator</p>
+    <p>
+        All results are estimates. Actual TNB billing,
+        tariff adjustments and solar credits may differ.
+    </p>
+</footer>
+
 </body>
 </html>
