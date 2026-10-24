@@ -8,7 +8,7 @@
     --text: #1f2937;
     --muted: #6b7280;
     --border: #e5e7eb;
-    --shadow: 0 6px 24px rgba(0,0,0,.06);
+    --shadow: 0 6px 24px rgba(0, 0, 0, .06);
 }
 
 * {
@@ -31,8 +31,11 @@ body {
 }
 
 .header {
-    background: linear-gradient(135deg,
-        var(--primary-dark), var(--primary));
+    background: linear-gradient(
+        135deg,
+        var(--primary-dark),
+        var(--primary)
+    );
     color: white;
     padding: 36px 0;
     text-align: center;
@@ -48,7 +51,7 @@ body {
     opacity: .9;
 }
 
-/* THREE PAGE BUTTONS */
+/* NAVIGATION */
 
 .page-nav {
     display: grid;
@@ -80,7 +83,7 @@ body {
     display: none !important;
 }
 
-/* INPUT */
+/* INPUT SECTIONS */
 
 .input-section {
     background: white;
@@ -102,7 +105,7 @@ body {
 
 .input-columns {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0,1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 20px;
 }
 
@@ -123,15 +126,17 @@ body {
     font-size: 18px;
     border: 2px solid var(--border);
     border-radius: 10px;
-    background: white;
     outline: none;
+    background: white;
 }
 
 .input-group input:focus,
 .input-group select:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 4px rgba(8,127,91,.1);
+    box-shadow: 0 0 0 4px rgba(8, 127, 91, .1);
 }
+
+/* AFA AND ATAP SETTINGS */
 
 .settings-panel {
     margin-top: 25px;
@@ -176,7 +181,7 @@ body {
     display: none;
 }
 
-/* RESULTS */
+/* RESULT CARDS */
 
 .results-section,
 .savings-section {
@@ -192,7 +197,7 @@ body {
 
 .results-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0,1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 22px;
 }
 
@@ -208,7 +213,7 @@ body {
 
 .result-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(0,0,0,.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .1);
 }
 
 .result-card h3 {
@@ -253,11 +258,37 @@ body {
     overflow-wrap: anywhere;
 }
 
+/* IMPORTANT ATAP ROWS */
+
+.details .atap-before {
+    margin-top: 12px;
+    border-top: 2px solid #b7e4c7;
+    padding-top: 15px;
+    font-weight: bold;
+}
+
+.details .atap-credit span {
+    color: #15803d;
+}
+
+.details .atap-after {
+    background: var(--primary-light);
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: bold;
+    color: var(--primary-dark);
+}
+
+.details .atap-after span {
+    color: var(--primary);
+    font-size: 17px;
+}
+
 /* SAVINGS */
 
 .savings-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0,1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px;
 }
 
@@ -280,7 +311,7 @@ body {
     font-size: 29px;
 }
 
-/* PRINT */
+/* PRINT BUTTON */
 
 .print-section {
     text-align: center;
@@ -405,11 +436,11 @@ footer p {
     }
 
     .results-grid {
-        grid-template-columns: repeat(2,1fr);
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .savings-grid {
-        grid-template-columns: repeat(3,1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
 
     footer {
