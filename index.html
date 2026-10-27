@@ -4,13 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Skyworth Solar Calculator</title>
-
-    <link rel="stylesheet" href="style.css?v=14">
-    <script src="script.js?v=14" defer></script>
+    <link rel="stylesheet" href="style.css?v=15">
+    <script src="script.js?v=15" defer></script>
 </head>
-
 <body>
 
 <header class="header">
@@ -21,481 +18,265 @@
 </header>
 
 <nav class="page-nav container">
-
-    <button
-        class="nav-button active"
-        data-page="house"
-        onclick="switchPage('house')">
-        🏠 House
-    </button>
-
-    <button
-        class="nav-button"
-        data-page="shop"
-        onclick="switchPage('shop')">
-        🏪 Shop
-    </button>
-
-    <button
-        class="nav-button"
-        data-page="factory"
-        onclick="switchPage('factory')">
-        🏭 Factory
-    </button>
-
+    <button class="nav-button active" data-page="house"
+        onclick="switchPage('house')">🏠 House</button>
+    <button class="nav-button" data-page="shop"
+        onclick="switchPage('shop')">🏪 Shop</button>
+    <button class="nav-button" data-page="factory"
+        onclick="switchPage('factory')">🏭 Factory</button>
 </nav>
 
 <main class="container">
 
-    <!-- HOUSE PAGE -->
+    <!-- HOUSE -->
     <div id="housePage" class="calculator-page">
-
         <section class="input-section">
             <h2>Residential Calculator</h2>
-
-            <p>
-                Enter the monthly electricity consumption
-                from the customer's TNB bill.
-            </p>
+            <p>Enter the monthly electricity consumption from the customer's TNB bill.</p>
 
             <div class="input-group">
-                <label for="jumlah">
-                    Jumlah Penggunaan Anda (kWh)
-                </label>
-
-                <input
-                    type="number"
-                    id="jumlah"
-                    min="0"
-                    step="any"
-                    placeholder="Example: 1000"
-                    oninput="calculateAll()">
+                <label for="jumlah">Jumlah Penggunaan Anda (kWh)</label>
+                <input type="number" id="jumlah" min="0" step="any"
+                    placeholder="Example: 1000" oninput="calculateAll()">
             </div>
 
-            <!-- HOUSE NIGHT USAGE -->
             <div class="night-usage-control">
-
-                <label for="houseNight">
-                    Night Usage / Remaining Usage (%)
-                </label>
-
+                <label for="houseNight">Night Usage / Remaining Usage (%)</label>
                 <div class="night-usage-row">
-
-                    <input
-                        type="range"
-                        id="houseNightSlider"
-                        min="0"
-                        max="100"
-                        step="5"
-                        value="60"
-                        oninput="updateNightUsage('house', 'slider')">
-
+                    <input type="range" id="houseNightSlider"
+                        min="0" max="100" step="5" value="60"
+                        oninput="updateNightUsage('house','slider')">
                     <div class="night-number">
-                        <input
-                            type="number"
-                            id="houseNight"
-                            min="0"
-                            max="100"
-                            step="1"
-                            value="60"
-                            oninput="updateNightUsage('house', 'number')">
-
+                        <input type="number" id="houseNight"
+                            min="0" max="100" step="1" value="60"
+                            oninput="updateNightUsage('house','number')">
                         <span>%</span>
                     </div>
-
                 </div>
-
                 <p class="night-hint">
-                    Estimated percentage of electricity
-                    still purchased from TNB after solar.
+                    Estimated percentage of electricity still purchased from TNB after solar.
                 </p>
+            </div>
 
+            <div class="afa-control">
+                <label for="houseAFARate">AFA Rate (RM/kWh)</label>
+                <input type="number" id="houseAFARate"
+                    value="0.0380" step="0.0001"
+                    placeholder="Example: 0.0380"
+                    oninput="calculateAll()">
+                <p class="afa-hint">
+                    Example: 0.0380 = 3.80 sen/kWh.
+                    Negative rates are supported.
+                </p>
             </div>
 
             <p class="info-note">
-                Estimated residential electricity and solar savings.
+                Residential electricity and solar savings estimate.
+                House AFA follows the existing model: applied when usage exceeds 800 kWh.
                 Actual TNB charges and ATAP settlement may differ.
             </p>
-
         </section>
 
         <section class="results-section">
             <h2>Solar Savings Comparison</h2>
-
-            <div
-                class="results-grid"
-                id="houseResults">
-            </div>
+            <div class="results-grid" id="houseResults"></div>
         </section>
 
         <section class="savings-section">
             <h2>Estimated Monthly Savings</h2>
-
-            <div
-                class="savings-grid"
-                id="houseSavings">
-            </div>
+            <div class="savings-grid" id="houseSavings"></div>
         </section>
 
         <section class="print-section">
-            <button onclick="window.print()">
-                Print / Save as PDF
-            </button>
+            <button onclick="window.print()">Print / Save as PDF</button>
         </section>
-
     </div>
 
-
-    <!-- SHOP PAGE -->
+    <!-- SHOP -->
     <div id="shopPage" class="calculator-page" hidden>
-
         <section class="input-section">
             <h2>Commercial Calculator</h2>
-
-            <p>
-                Enter the monthly electricity consumption
-                from the customer's TNB bill.
-            </p>
+            <p>Enter the monthly electricity consumption from the customer's TNB bill.</p>
 
             <div class="input-group">
-                <label for="shopUsage">
-                    Jumlah Penggunaan Anda (kWh)
-                </label>
-
-                <input
-                    type="number"
-                    id="shopUsage"
-                    min="0"
-                    step="any"
-                    placeholder="Example: 1000"
-                    oninput="calculateShop()">
+                <label for="shopUsage">Jumlah Penggunaan Anda (kWh)</label>
+                <input type="number" id="shopUsage" min="0" step="any"
+                    placeholder="Example: 1000" oninput="calculateShop()">
             </div>
 
-            <!-- SHOP NIGHT USAGE -->
             <div class="night-usage-control">
-
-                <label for="shopNight">
-                    Night Usage / Remaining Usage (%)
-                </label>
-
+                <label for="shopNight">Night Usage / Remaining Usage (%)</label>
                 <div class="night-usage-row">
-
-                    <input
-                        type="range"
-                        id="shopNightSlider"
-                        min="0"
-                        max="100"
-                        step="5"
-                        value="60"
-                        oninput="updateNightUsage('shop', 'slider')">
-
+                    <input type="range" id="shopNightSlider"
+                        min="0" max="100" step="5" value="60"
+                        oninput="updateNightUsage('shop','slider')">
                     <div class="night-number">
-                        <input
-                            type="number"
-                            id="shopNight"
-                            min="0"
-                            max="100"
-                            step="1"
-                            value="60"
-                            oninput="updateNightUsage('shop', 'number')">
-
+                        <input type="number" id="shopNight"
+                            min="0" max="100" step="1" value="60"
+                            oninput="updateNightUsage('shop','number')">
                         <span>%</span>
                     </div>
-
                 </div>
-
                 <p class="night-hint">
-                    Adjust according to the customer's
-                    estimated remaining electricity usage.
+                    Adjust the estimated remaining electricity usage after solar.
                 </p>
+            </div>
 
+            <div class="afa-control">
+                <label for="shopAFARate">AFA Rate (RM/kWh)</label>
+                <input type="number" id="shopAFARate"
+                    value="0.0361" step="0.0001"
+                    placeholder="Example: 0.0361"
+                    oninput="calculateShop()">
+                <p class="afa-hint">
+                    Example: 0.0361 = 3.61 sen/kWh.
+                    Negative rates are supported.
+                </p>
             </div>
 
             <p class="info-note">
                 Low Voltage General commercial tariff estimate.
-                Selepas ATAP uses a sales simulation that
-                deducts the Tenaga charge.
-                Actual ATAP credits and AFA may differ.
+                Shop ATAP uses the selected sales simulation:
+                Selepas ATAP = Sebelum ATAP - Tenaga.
+                This is not an official TNB credit formula.
             </p>
-
         </section>
 
         <section class="results-section">
             <h2>Solar Savings Comparison</h2>
-
-            <div
-                class="results-grid"
-                id="shopResults">
-            </div>
+            <div class="results-grid" id="shopResults"></div>
         </section>
 
         <section class="savings-section">
             <h2>Estimated Monthly Savings</h2>
-
-            <div
-                class="savings-grid"
-                id="shopSavings">
-            </div>
+            <div class="savings-grid" id="shopSavings"></div>
         </section>
 
         <section class="print-section">
-            <button onclick="window.print()">
-                Print / Save as PDF
-            </button>
+            <button onclick="window.print()">Print / Save as PDF</button>
         </section>
-
     </div>
 
-
-    <!-- FACTORY PAGE -->
+    <!-- FACTORY -->
     <div id="factoryPage" class="calculator-page" hidden>
-
         <section class="input-section">
             <h2>Industrial Calculator</h2>
-
-            <p>
-                Factory Electricity Bill & Solar Savings
-            </p>
+            <p>Factory Electricity Bill & Solar Savings</p>
 
             <div class="input-columns">
-
                 <div class="input-group">
-                    <label for="factoryUsage">
-                        Monthly Electricity Usage (kWh)
-                    </label>
-
-                    <input
-                        type="number"
-                        id="factoryUsage"
-                        min="0"
-                        step="any"
-                        placeholder="Example: 10000"
+                    <label for="factoryUsage">Monthly Electricity Usage (kWh)</label>
+                    <input type="number" id="factoryUsage"
+                        min="0" step="any" placeholder="Example: 10000"
                         oninput="calculateFactory()">
                 </div>
 
                 <div class="input-group">
-                    <label for="factoryVoltage">
-                        Supply Voltage
-                    </label>
-
-                    <select
-                        id="factoryVoltage"
-                        onchange="calculateFactory()">
-
-                        <option value="LV">
-                            Low Voltage General
-                        </option>
-
-                        <option value="MV">
-                            Medium Voltage General
-                        </option>
-
+                    <label for="factoryVoltage">Supply Voltage</label>
+                    <select id="factoryVoltage" onchange="calculateFactory()">
+                        <option value="LV">Low Voltage General</option>
+                        <option value="MV">Medium Voltage General</option>
                     </select>
                 </div>
 
-                <div
-                    class="input-group"
-                    id="factoryMDGroup"
-                    hidden>
-
-                    <label for="factoryMD">
-                        Maximum Demand (kW)
-                    </label>
-
-                    <input
-                        type="number"
-                        id="factoryMD"
-                        min="0"
-                        step="any"
-                        placeholder="Example: 50"
+                <div class="input-group" id="factoryMDGroup" hidden>
+                    <label for="factoryMD">Maximum Demand (kW)</label>
+                    <input type="number" id="factoryMD"
+                        min="0" step="any" placeholder="Example: 50"
                         oninput="calculateFactory()">
                 </div>
-
             </div>
 
-            <!-- FACTORY NIGHT USAGE -->
             <div class="night-usage-control">
-
-                <label for="factoryNight">
-                    Night Usage / Remaining Usage (%)
-                </label>
-
+                <label for="factoryNight">Night Usage / Remaining Usage (%)</label>
                 <div class="night-usage-row">
-
-                    <input
-                        type="range"
-                        id="factoryNightSlider"
-                        min="0"
-                        max="100"
-                        step="5"
-                        value="60"
-                        oninput="updateNightUsage('factory', 'slider')">
-
+                    <input type="range" id="factoryNightSlider"
+                        min="0" max="100" step="5" value="60"
+                        oninput="updateNightUsage('factory','slider')">
                     <div class="night-number">
-                        <input
-                            type="number"
-                            id="factoryNight"
-                            min="0"
-                            max="100"
-                            step="1"
-                            value="60"
-                            oninput="updateNightUsage('factory', 'number')">
-
+                        <input type="number" id="factoryNight"
+                            min="0" max="100" step="1" value="60"
+                            oninput="updateNightUsage('factory','number')">
                         <span>%</span>
                     </div>
-
                 </div>
-
                 <p class="night-hint">
-                    Adjust the estimated remaining
-                    electricity usage after solar.
+                    Adjust the estimated remaining electricity usage after solar.
                 </p>
-
             </div>
 
-            <!-- AFA SETTINGS -->
             <div class="settings-panel">
-
                 <h3>AFA Settings</h3>
 
                 <div class="input-columns">
-
                     <div class="input-group">
-                        <label for="factoryAFAMode">
-                            AFA Calculation
-                        </label>
-
-                        <select
-                            id="factoryAFAMode"
+                        <label for="factoryAFAMode">AFA Calculation</label>
+                        <select id="factoryAFAMode"
                             onchange="updateFactoryAFAMode()">
-
-                            <option value="single">
-                                Single AFA Rate
-                            </option>
-
-                            <option value="split">
-                                Split AFA (Two Rates)
-                            </option>
-
+                            <option value="single">Single AFA Rate</option>
+                            <option value="split">Split AFA (Two Rates)</option>
                         </select>
                     </div>
 
-                    <div
-                        class="input-group"
-                        id="factorySingleAFAGroup">
-
-                        <label for="factoryAFARate">
-                            AFA Rate (RM/kWh)
-                        </label>
-
-                        <input
-                            type="number"
-                            id="factoryAFARate"
-                            step="0.0001"
-                            value="0.0361"
+                    <div class="input-group" id="factorySingleAFAGroup">
+                        <label for="factoryAFARate">AFA Rate (RM/kWh)</label>
+                        <input type="number" id="factoryAFARate"
+                            step="0.0001" value="0.0361"
                             oninput="calculateFactory()">
                     </div>
-
                 </div>
 
-                <div
-                    id="factorySplitAFAGroup"
-                    class="input-columns"
-                    hidden>
+                <div id="factorySplitAFAGroup" class="input-columns" hidden>
+                    <div class="input-group">
+                        <label for="factoryAFA1Usage">Period 1 Usage (kWh)</label>
+                        <input type="number" id="factoryAFA1Usage"
+                            min="0" step="any" oninput="calculateFactory()">
+                    </div>
 
                     <div class="input-group">
-                        <label for="factoryAFA1Usage">
-                            Period 1 Usage (kWh)
-                        </label>
-
-                        <input
-                            type="number"
-                            id="factoryAFA1Usage"
-                            min="0"
-                            step="any"
+                        <label for="factoryAFA1Rate">Period 1 AFA Rate (RM/kWh)</label>
+                        <input type="number" id="factoryAFA1Rate"
+                            step="0.0001" value="0.0367"
                             oninput="calculateFactory()">
                     </div>
 
                     <div class="input-group">
-                        <label for="factoryAFA1Rate">
-                            Period 1 AFA Rate (RM/kWh)
-                        </label>
-
-                        <input
-                            type="number"
-                            id="factoryAFA1Rate"
-                            step="0.0001"
-                            value="0.0367"
-                            oninput="calculateFactory()">
+                        <label for="factoryAFA2Usage">Period 2 Usage (kWh)</label>
+                        <input type="number" id="factoryAFA2Usage"
+                            min="0" step="any" oninput="calculateFactory()">
                     </div>
 
                     <div class="input-group">
-                        <label for="factoryAFA2Usage">
-                            Period 2 Usage (kWh)
-                        </label>
-
-                        <input
-                            type="number"
-                            id="factoryAFA2Usage"
-                            min="0"
-                            step="any"
+                        <label for="factoryAFA2Rate">Period 2 AFA Rate (RM/kWh)</label>
+                        <input type="number" id="factoryAFA2Rate"
+                            step="0.0001" value="0.0361"
                             oninput="calculateFactory()">
                     </div>
-
-                    <div class="input-group">
-                        <label for="factoryAFA2Rate">
-                            Period 2 AFA Rate (RM/kWh)
-                        </label>
-
-                        <input
-                            type="number"
-                            id="factoryAFA2Rate"
-                            step="0.0001"
-                            value="0.0361"
-                            oninput="calculateFactory()">
-                    </div>
-
                 </div>
 
-                <p
-                    class="validation-message"
-                    id="factoryAFAWarning">
-                </p>
-
+                <p class="validation-message" id="factoryAFAWarning"></p>
             </div>
 
             <p class="info-note">
-                Factory results are estimates.
-                Maximum Demand is assumed unchanged after solar.
-                Actual tariffs, taxes and other adjustments may differ.
+                Factory results are estimates. Maximum Demand is assumed
+                unchanged after solar. Actual tariffs, taxes and adjustments
+                may differ.
             </p>
-
         </section>
 
         <section class="results-section">
             <h2>Solar Savings Comparison</h2>
-
-            <div
-                class="results-grid"
-                id="factoryResults">
-            </div>
+            <div class="results-grid" id="factoryResults"></div>
         </section>
 
         <section class="savings-section">
             <h2>Estimated Monthly Savings</h2>
-
-            <div
-                class="savings-grid"
-                id="factorySavings">
-            </div>
+            <div class="savings-grid" id="factorySavings"></div>
         </section>
 
         <section class="print-section">
-            <button onclick="window.print()">
-                Print / Save as PDF
-            </button>
+            <button onclick="window.print()">Print / Save as PDF</button>
         </section>
-
     </div>
 
 </main>
