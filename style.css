@@ -136,7 +136,7 @@ body {
     box-shadow: 0 0 0 4px rgba(8, 127, 91, 0.1);
 }
 
-/* NIGHT USAGE SLIDER */
+/* NIGHT USAGE */
 
 .night-usage-control {
     margin-top: 22px;
@@ -201,7 +201,45 @@ body {
     margin-top: 12px;
 }
 
-/* SETTINGS */
+/* CUSTOM AFA RATE */
+
+.afa-control {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f0f9f4;
+    border: 1px solid #b7e4c7;
+    border-radius: 14px;
+}
+
+.afa-control label {
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--primary-dark);
+    margin-bottom: 12px;
+}
+
+.afa-control input {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #b7e4c7;
+    border-radius: 10px;
+    font-size: 18px;
+    background: white;
+    outline: none;
+}
+
+.afa-control input:focus {
+    border-color: var(--primary);
+}
+
+.afa-hint {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* FACTORY SETTINGS */
 
 .settings-panel {
     margin-top: 25px;
@@ -452,7 +490,8 @@ footer p {
         font-size: 25px;
     }
 
-    .night-usage-control {
+    .night-usage-control,
+    .afa-control {
         padding: 15px;
     }
 
