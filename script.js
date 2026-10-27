@@ -1,21 +1,15 @@
 
 // ==========================================
-// SKYWORTH SOLAR CALCULATOR v14
+// SKYWORTH SOLAR CALCULATOR v15
 // HOUSE / SHOP / FACTORY
 // ==========================================
 
-// ==========================================
 // CONFIGURATION
-// ==========================================
 
-// Default remaining usage after solar: 60%
-// Each page can override this using its slider.
 const DEFAULT_NIGHT_PERCENTAGE = 60;
-
 const BATTERY_DEDUCTION_KWH = 450;
 const KWTBB_RATE = 0.016;
 
-// HOUSE RATE
 const HOUSE_RATE = {
     tenaga: 0.2703,
     kapasiti: 0.0455,
@@ -23,8 +17,6 @@ const HOUSE_RATE = {
     afa: 0.038
 };
 
-// SHOP RATE
-// Non-Domestic Low Voltage General
 const SHOP_RATE = {
     tenaga: 0.2703,
     kapasiti: 0.0883,
@@ -33,7 +25,6 @@ const SHOP_RATE = {
     afa: 0.0361
 };
 
-// FACTORY RATE
 const FACTORY_RATE = {
     LV: {
         tenaga: 0.2703,
@@ -41,7 +32,6 @@ const FACTORY_RATE = {
         rangkaian: 0.1482,
         retail: 20
     },
-
     MV: {
         tenaga: 0.2983,
         kapasiti: 29.43,
@@ -121,7 +111,6 @@ function resultCard(title, subtitle, total, details) {
             <h3>${title}</h3>
             <p>${subtitle}</p>
             <h2>${formatRM(total)}</h2>
-
             <div class="details">
                 ${details}
             </div>
@@ -157,10 +146,7 @@ function getNightPercentage(page) {
         return DEFAULT_NIGHT_PERCENTAGE;
     }
 
-    return Math.max(
-        0,
-        Math.min(100, value)
-    );
+    return Math.max(0, Math.min(100, value));
 }
 
 function updateNightUsage(page, source) {
@@ -182,10 +168,7 @@ function updateNightUsage(page, source) {
 
     const value = Math.max(
         0,
-        Math.min(
-            100,
-            Number(sourceInput.value) || 0
-        )
+        Math.min(100, Number(sourceInput.value) || 0)
     );
 
     numberInput.value = value;
@@ -199,10 +182,6 @@ function updateNightUsage(page, source) {
         calculateFactory();
     }
 }
-
-// ==========================================
-// REMAINING USAGE AFTER SOLAR
-// ==========================================
 
 function getRemainingUsage(
     usage,
@@ -238,7 +217,6 @@ function getICTRate(usage) {
     if (usage <= 850) return 2.5;
     if (usage <= 900) return 1;
     if (usage <= 1000) return 0.5;
-
     return 0;
 }
 
@@ -259,10 +237,12 @@ function houseBill(usage, isSolar = false) {
         usage * HOUSE_RATE.rangkaian
     );
 
+    // CUSTOM AFA RATE
+    const afaRate = signedNumeric("houseAFARate");
+
+    // Preserve existing House AFA threshold.
     const afa = round2(
-        usage > 800
-            ? usage * HOUSE_RATE.afa
-            : 0
+        usage > 800 ? usage * afaRate : 0
     );
 
     const ictRate = getICTRate(usage);
@@ -282,7 +262,6 @@ function houseBill(usage, isSolar = false) {
         )
     );
 
-    // Preserve previous House model.
     const kwtbb = isSolar
         ? round2(currentCharge * KWTBB_RATE)
         : 0;
@@ -291,8 +270,7 @@ function houseBill(usage, isSolar = false) {
         currentCharge + kwtbb
     );
 
-    // Previous House sales-model assumption.
-    // This is not measured export energy.
+    // Existing House sales simulation.
     const estimatedExport = isSolar ? usage : 0;
 
     const atapCredit = isSolar
@@ -322,6 +300,7 @@ function houseBill(usage, isSolar = false) {
         kapasiti,
         rangkaian,
         afa,
+        afaRate,
         ictRate,
         ictDiscount,
         kwtbb,
@@ -332,10 +311,6 @@ function houseBill(usage, isSolar = false) {
         afterATAP
     };
 }
-
-// ==========================================
-// HOUSE CARDS
-// ==========================================
 
 function houseCard(title, subtitle, bill, solar) {
     let details =
@@ -358,6 +333,10 @@ function houseCard(title, subtitle, bill, solar) {
         detail(
             "AFA",
             formatRM(bill.afa)
+        ) +
+        detail(
+            "AFA Rate",
+            bill.afaRate.toFixed(4) + " RM/kWh"
         ) +
         detail(
             "ICT Rate",
@@ -407,15 +386,9 @@ function houseCard(title, subtitle, bill, solar) {
 
 function calculateAll() {
     const usage = numeric("jumlah");
+    const nightPercentage = getNightPercentage("house");
 
-    const nightPercentage = getNightPercentage(
-        "house"
-    );
-
-    const before = houseBill(
-        usage,
-        false
-    );
+    const before = houseBill(usage, false);
 
     let results = houseCard(
         "Sebelum Pasang",
@@ -445,10 +418,7 @@ function calculateAll() {
             nightPercentage
         );
 
-        const after = houseBill(
-            remaining,
-            true
-        );
+        const after = houseBill(remaining, true);
 
         results += houseCard(
             titles[count],
@@ -469,13 +439,8 @@ function calculateAll() {
         );
     }
 
-    document.getElementById(
-        "houseResults"
-    ).innerHTML = results;
-
-    document.getElementById(
-        "houseSavings"
-    ).innerHTML = savings;
+    document.getElementById("houseResults").innerHTML = results;
+    document.getElementById("houseSavings").innerHTML = savings;
 }
 
 // ==========================================
@@ -495,8 +460,11 @@ function shopBill(usage, isSolar = false) {
         usage * SHOP_RATE.rangkaian
     );
 
+    // CUSTOM AFA RATE
+    const afaRate = signedNumeric("shopAFARate");
+
     const afa = round2(
-        usage * SHOP_RATE.afa
+        usage * afaRate
     );
 
     const retail = SHOP_RATE.retail;
@@ -521,12 +489,15 @@ function shopBill(usage, isSolar = false) {
         kwtbb
     );
 
-    // SHOP ATAP SALES SIMULATION
-    // Sebelum ATAP - Tenaga = Selepas ATAP
-    // Not an official TNB credit formula.
+    // Shop ATAP sales simulation:
+    // Selepas ATAP = Sebelum ATAP - Tenaga
+    // Not the official TNB credit formula.
 
     const atapCredit = isSolar
-        ? Math.min(beforeATAP, tenaga)
+        ? Math.min(
+            Math.max(0, beforeATAP),
+            tenaga
+        )
         : 0;
 
     const afterATAP = Math.max(
@@ -540,6 +511,7 @@ function shopBill(usage, isSolar = false) {
         kapasiti,
         rangkaian,
         afa,
+        afaRate,
         retail,
         kwtbb,
         beforeATAP,
@@ -547,10 +519,6 @@ function shopBill(usage, isSolar = false) {
         afterATAP
     };
 }
-
-// ==========================================
-// SHOP CARDS
-// ==========================================
 
 function shopCard(title, subtitle, bill, solar) {
     let details =
@@ -573,6 +541,10 @@ function shopCard(title, subtitle, bill, solar) {
         detail(
             "AFA (Estimated)",
             formatRM(bill.afa)
+        ) +
+        detail(
+            "AFA Rate",
+            bill.afaRate.toFixed(4) + " RM/kWh"
         ) +
         detail(
             "Caj Peruncitan",
@@ -617,15 +589,9 @@ function shopCard(title, subtitle, bill, solar) {
 
 function calculateShop() {
     const usage = numeric("shopUsage");
+    const nightPercentage = getNightPercentage("shop");
 
-    const nightPercentage = getNightPercentage(
-        "shop"
-    );
-
-    const before = shopBill(
-        usage,
-        false
-    );
+    const before = shopBill(usage, false);
 
     let results = shopCard(
         "Sebelum Pasang",
@@ -655,10 +621,7 @@ function calculateShop() {
             nightPercentage
         );
 
-        const after = shopBill(
-            remaining,
-            true
-        );
+        const after = shopBill(remaining, true);
 
         results += shopCard(
             titles[count],
@@ -679,13 +642,8 @@ function calculateShop() {
         );
     }
 
-    document.getElementById(
-        "shopResults"
-    ).innerHTML = results;
-
-    document.getElementById(
-        "shopSavings"
-    ).innerHTML = savings;
+    document.getElementById("shopResults").innerHTML = results;
+    document.getElementById("shopSavings").innerHTML = savings;
 }
 
 // ==========================================
@@ -717,27 +675,14 @@ function getFactoryAFAConfig(usage) {
         return {
             valid: true,
             mode: "single",
-            rate: signedNumeric(
-                "factoryAFARate"
-            )
+            rate: signedNumeric("factoryAFARate")
         };
     }
 
-    const usage1 = numeric(
-        "factoryAFA1Usage"
-    );
-
-    const usage2 = numeric(
-        "factoryAFA2Usage"
-    );
-
-    const rate1 = signedNumeric(
-        "factoryAFA1Rate"
-    );
-
-    const rate2 = signedNumeric(
-        "factoryAFA2Rate"
-    );
+    const usage1 = numeric("factoryAFA1Usage");
+    const usage2 = numeric("factoryAFA2Usage");
+    const rate1 = signedNumeric("factoryAFA1Rate");
+    const rate2 = signedNumeric("factoryAFA2Rate");
 
     return {
         valid: Math.abs(
@@ -751,11 +696,7 @@ function getFactoryAFAConfig(usage) {
     };
 }
 
-function factoryAFA(
-    usage,
-    originalUsage,
-    config
-) {
+function factoryAFA(usage, originalUsage, config) {
     if (config.mode === "single") {
         return usage * config.rate;
     }
@@ -767,13 +708,9 @@ function factoryAFA(
     const ratio = usage / originalUsage;
 
     return (
-        config.usage1 *
-        ratio *
-        config.rate1
+        config.usage1 * ratio * config.rate1
     ) + (
-        config.usage2 *
-        ratio *
-        config.rate2
+        config.usage2 * ratio * config.rate2
     );
 }
 
@@ -850,12 +787,7 @@ function factoryBill(
 // FACTORY CARDS
 // ==========================================
 
-function factoryCard(
-    title,
-    subtitle,
-    bill,
-    voltage
-) {
+function factoryCard(title, subtitle, bill, voltage) {
     let details = detail(
         "Jumlah Penggunaan",
         formatKWh(bill.usage)
@@ -911,29 +843,20 @@ function factoryCard(
 // ==========================================
 
 function calculateFactory() {
-    const usage = numeric(
-        "factoryUsage"
-    );
-
-    const nightPercentage = getNightPercentage(
-        "factory"
-    );
+    const usage = numeric("factoryUsage");
+    const nightPercentage = getNightPercentage("factory");
 
     const voltage = document.getElementById(
         "factoryVoltage"
     ).value;
 
-    const md = numeric(
-        "factoryMD"
-    );
+    const md = numeric("factoryMD");
 
     document.getElementById(
         "factoryMDGroup"
     ).hidden = voltage !== "MV";
 
-    const afaConfig = getFactoryAFAConfig(
-        usage
-    );
+    const afaConfig = getFactoryAFAConfig(usage);
 
     const warning = document.getElementById(
         "factoryAFAWarning"
