@@ -136,6 +136,71 @@ body {
     box-shadow: 0 0 0 4px rgba(8, 127, 91, 0.1);
 }
 
+/* NIGHT USAGE SLIDER */
+
+.night-usage-control {
+    margin-top: 22px;
+    padding: 20px;
+    background: #f0f9f4;
+    border: 1px solid #b7e4c7;
+    border-radius: 14px;
+}
+
+.night-usage-control > label {
+    display: block;
+    color: var(--primary-dark);
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.night-usage-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.night-usage-row input[type="range"] {
+    flex: 1;
+    min-width: 0;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.night-number {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    padding: 6px 12px;
+    border: 2px solid #b7e4c7;
+    border-radius: 10px;
+}
+
+.night-number input {
+    width: 65px;
+    padding: 5px;
+    border: none;
+    outline: none;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--primary-dark);
+    background: transparent;
+}
+
+.night-number span {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--primary-dark);
+}
+
+.night-hint {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 12px;
+}
+
 /* SETTINGS */
 
 .settings-panel {
@@ -385,6 +450,18 @@ footer p {
 
     .saving-card h2 {
         font-size: 25px;
+    }
+
+    .night-usage-control {
+        padding: 15px;
+    }
+
+    .night-usage-row {
+        gap: 12px;
+    }
+
+    .night-number {
+        padding: 5px 8px;
     }
 }
 
