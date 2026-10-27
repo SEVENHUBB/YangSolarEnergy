@@ -1,381 +1,438 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Skyworth Solar Calculator</title>
-
-    <link rel="stylesheet" href="style.css?v=13">
-    <script src="script.js?v=13" defer></script>
-</head>
-
-<body>
-
-<header class="header">
-    <div class="container">
-        <h1>SKYWORTH SOLAR</h1>
-        <p>Solar Electricity Savings Calculator</p>
-    </div>
-</header>
-
-<nav class="page-nav container">
-
-    <button
-        class="nav-button active"
-        data-page="house"
-        onclick="switchPage('house')">
-        🏠 House
-    </button>
-
-    <button
-        class="nav-button"
-        data-page="shop"
-        onclick="switchPage('shop')">
-        🏪 Shop
-    </button>
-
-    <button
-        class="nav-button"
-        data-page="factory"
-        onclick="switchPage('factory')">
-        🏭 Factory
-    </button>
-
-</nav>
-
-<main class="container">
-
-    <!-- HOUSE PAGE -->
-    <div id="housePage" class="calculator-page">
-
-        <section class="input-section">
-            <h2>Residential Calculator</h2>
-
-            <p>
-                Enter the monthly electricity consumption
-                from the customer's TNB bill.
-            </p>
-
-            <div class="input-group">
-                <label for="jumlah">
-                    Jumlah Penggunaan Anda (kWh)
-                </label>
-
-                <input
-                    type="number"
-                    id="jumlah"
-                    min="0"
-                    step="any"
-                    placeholder="Example: 1000"
-                    oninput="calculateAll()">
-            </div>
-
-            <p class="info-note">
-                Estimated residential electricity and solar savings.
-                Actual TNB charges and ATAP settlement may differ.
-            </p>
-        </section>
-
-        <section class="results-section">
-            <h2>Solar Savings Comparison</h2>
-            <div
-                class="results-grid"
-                id="houseResults">
-            </div>
-        </section>
-
-        <section class="savings-section">
-            <h2>Estimated Monthly Savings</h2>
-            <div
-                class="savings-grid"
-                id="houseSavings">
-            </div>
-        </section>
-
-        <section class="print-section">
-            <button onclick="window.print()">
-                Print / Save as PDF
-            </button>
-        </section>
-
-    </div>
-
-    <!-- SHOP PAGE -->
-    <div id="shopPage" class="calculator-page" hidden>
-
-        <section class="input-section">
-            <h2>Commercial Calculator</h2>
-
-            <p>
-                Enter the monthly electricity consumption
-                from the customer's TNB bill.
-            </p>
-
-            <div class="input-group">
-                <label for="shopUsage">
-                    Jumlah Penggunaan Anda (kWh)
-                </label>
-
-                <input
-                    type="number"
-                    id="shopUsage"
-                    min="0"
-                    step="any"
-                    placeholder="Example: 1000"
-                    oninput="calculateShop()">
-            </div>
-
-            <p class="info-note">
-                Low Voltage General commercial tariff estimate.
-                Selepas ATAP uses a sales simulation that
-                deducts the Tenaga charge.
-                Actual ATAP credits and AFA may differ.
-            </p>
-        </section>
-
-        <section class="results-section">
-            <h2>Solar Savings Comparison</h2>
-            <div
-                class="results-grid"
-                id="shopResults">
-            </div>
-        </section>
-
-        <section class="savings-section">
-            <h2>Estimated Monthly Savings</h2>
-            <div
-                class="savings-grid"
-                id="shopSavings">
-            </div>
-        </section>
-
-        <section class="print-section">
-            <button onclick="window.print()">
-                Print / Save as PDF
-            </button>
-        </section>
-
-    </div>
-
-    <!-- FACTORY PAGE -->
-    <div id="factoryPage" class="calculator-page" hidden>
-
-        <section class="input-section">
-            <h2>Industrial Calculator</h2>
-
-            <p>
-                Factory Electricity Bill & Solar Savings
-            </p>
-
-            <div class="input-columns">
-
-                <div class="input-group">
-                    <label for="factoryUsage">
-                        Monthly Electricity Usage (kWh)
-                    </label>
-
-                    <input
-                        type="number"
-                        id="factoryUsage"
-                        min="0"
-                        step="any"
-                        placeholder="Example: 10000"
-                        oninput="calculateFactory()">
-                </div>
-
-                <div class="input-group">
-                    <label for="factoryVoltage">
-                        Supply Voltage
-                    </label>
-
-                    <select
-                        id="factoryVoltage"
-                        onchange="calculateFactory()">
-
-                        <option value="LV">
-                            Low Voltage General
-                        </option>
-
-                        <option value="MV">
-                            Medium Voltage General
-                        </option>
-
-                    </select>
-                </div>
-
-                <div
-                    class="input-group"
-                    id="factoryMDGroup"
-                    hidden>
-
-                    <label for="factoryMD">
-                        Maximum Demand (kW)
-                    </label>
-
-                    <input
-                        type="number"
-                        id="factoryMD"
-                        min="0"
-                        step="any"
-                        placeholder="Example: 50"
-                        oninput="calculateFactory()">
-                </div>
-
-            </div>
-
-            <div class="settings-panel">
-
-                <h3>AFA Settings</h3>
-
-                <div class="input-columns">
-
-                    <div class="input-group">
-                        <label for="factoryAFAMode">
-                            AFA Calculation
-                        </label>
-
-                        <select
-                            id="factoryAFAMode"
-                            onchange="updateFactoryAFAMode()">
-
-                            <option value="single">
-                                Single AFA Rate
-                            </option>
-
-                            <option value="split">
-                                Split AFA (Two Rates)
-                            </option>
-
-                        </select>
-                    </div>
-
-                    <div
-                        class="input-group"
-                        id="factorySingleAFAGroup">
-
-                        <label for="factoryAFARate">
-                            AFA Rate (RM/kWh)
-                        </label>
-
-                        <input
-                            type="number"
-                            id="factoryAFARate"
-                            step="0.0001"
-                            value="0.0361"
-                            oninput="calculateFactory()">
-                    </div>
-
-                </div>
-
-                <div
-                    id="factorySplitAFAGroup"
-                    class="input-columns"
-                    hidden>
-
-                    <div class="input-group">
-                        <label for="factoryAFA1Usage">
-                            Period 1 Usage (kWh)
-                        </label>
-
-                        <input
-                            type="number"
-                            id="factoryAFA1Usage"
-                            min="0"
-                            step="any"
-                            oninput="calculateFactory()">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="factoryAFA1Rate">
-                            Period 1 AFA Rate (RM/kWh)
-                        </label>
-
-                        <input
-                            type="number"
-                            id="factoryAFA1Rate"
-                            step="0.0001"
-                            value="0.0367"
-                            oninput="calculateFactory()">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="factoryAFA2Usage">
-                            Period 2 Usage (kWh)
-                        </label>
-
-                        <input
-                            type="number"
-                            id="factoryAFA2Usage"
-                            min="0"
-                            step="any"
-                            oninput="calculateFactory()">
-                    </div>
-
-                    <div class="input-group">
-                        <label for="factoryAFA2Rate">
-                            Period 2 AFA Rate (RM/kWh)
-                        </label>
-
-                        <input
-                            type="number"
-                            id="factoryAFA2Rate"
-                            step="0.0001"
-                            value="0.0361"
-                            oninput="calculateFactory()">
-                    </div>
-
-                </div>
-
-                <p
-                    class="validation-message"
-                    id="factoryAFAWarning">
-                </p>
-
-            </div>
-
-            <p class="info-note">
-                Factory results are estimates.
-                Maximum Demand is assumed unchanged after solar.
-                Actual tariffs, taxes and other adjustments may differ.
-            </p>
-
-        </section>
-
-        <section class="results-section">
-            <h2>Solar Savings Comparison</h2>
-            <div
-                class="results-grid"
-                id="factoryResults">
-            </div>
-        </section>
-
-        <section class="savings-section">
-            <h2>Estimated Monthly Savings</h2>
-            <div
-                class="savings-grid"
-                id="factorySavings">
-            </div>
-        </section>
-
-        <section class="print-section">
-            <button onclick="window.print()">
-                Print / Save as PDF
-            </button>
-        </section>
-
-    </div>
-
-</main>
-
-<footer>
-    <p>Skyworth Solar Calculator</p>
-    <p>
-        All calculations are estimates for illustration.
-        Actual TNB bills and Solar ATAP settlement may differ.
-    </p>
-</footer>
-
-</body>
-</html>
+:root {
+    --primary: #087f5b;
+    --primary-dark: #065f46;
+    --primary-light: #e8f7ef;
+    --background: #f4f7f6;
+    --white: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.container {
+    width: 92%;
+    max-width: 1250px;
+    margin: 0 auto;
+}
+
+.header {
+    background: linear-gradient(
+        135deg,
+        var(--primary-dark),
+        var(--primary)
+    );
+    color: white;
+    padding: 36px 0;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 32px;
+    letter-spacing: 2px;
+}
+
+.header p {
+    margin-top: 6px;
+    opacity: 0.9;
+}
+
+/* NAVIGATION */
+
+.page-nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.nav-button {
+    background: white;
+    color: var(--primary-dark);
+    border: 2px solid #cde6da;
+    padding: 17px 12px;
+    font-size: 17px;
+    font-weight: bold;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.nav-button:hover,
+.nav-button.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+[hidden] {
+    display: none !important;
+}
+
+/* INPUT */
+
+.input-section {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    margin-top: 30px;
+    box-shadow: var(--shadow);
+}
+
+.input-section h2 {
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+}
+
+.input-section > p {
+    color: var(--muted);
+    margin-bottom: 20px;
+}
+
+.input-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.input-group label {
+    font-weight: bold;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 15px;
+    font-size: 18px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+    background: white;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(8, 127, 91, 0.1);
+}
+
+/* SETTINGS */
+
+.settings-panel {
+    margin-top: 25px;
+    padding: 22px;
+    border: 1px solid #cde6da;
+    background: #f8fcfa;
+    border-radius: 14px;
+}
+
+.settings-panel h3 {
+    color: var(--primary-dark);
+    margin-bottom: 12px;
+}
+
+.settings-panel .input-columns + .input-columns {
+    margin-top: 18px;
+}
+
+.info-note {
+    margin-top: 20px !important;
+    padding: 15px;
+    border-left: 4px solid var(--primary);
+    background: #f0f7f4;
+    border-radius: 8px;
+    color: #475569 !important;
+    font-size: 13px;
+}
+
+.validation-message {
+    color: #b42318;
+    font-size: 13px;
+    margin-top: 12px;
+}
+
+.validation-message:empty {
+    display: none;
+}
+
+/* RESULTS */
+
+.results-section,
+.savings-section {
+    margin-top: 40px;
+}
+
+.results-section > h2,
+.savings-section > h2 {
+    margin-bottom: 20px;
+    font-size: 25px;
+    color: var(--primary-dark);
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.result-card {
+    background: white;
+    padding: 26px;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    min-width: 0;
+}
+
+.result-card h3 {
+    font-size: 21px;
+    color: var(--primary-dark);
+}
+
+.result-card > p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.result-card > h2 {
+    font-size: 32px;
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+
+.details {
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+}
+
+.details p {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+}
+
+.details p:last-child {
+    border-bottom: none;
+}
+
+.details span {
+    font-weight: bold;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+/* ATAP DETAILS */
+
+.details .atap-before {
+    margin-top: 12px;
+    border-top: 2px solid #b7e4c7;
+    padding-top: 15px;
+    font-weight: bold;
+}
+
+.details .atap-credit span {
+    color: #15803d;
+}
+
+.details .atap-after {
+    background: var(--primary-light);
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: bold;
+    color: var(--primary-dark);
+}
+
+.details .atap-after span {
+    color: var(--primary);
+    font-size: 17px;
+}
+
+/* SAVINGS */
+
+.savings-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.saving-card {
+    background: var(--primary-light);
+    border: 1px solid #b7e4c7;
+    border-radius: 16px;
+    padding: 25px;
+    text-align: center;
+}
+
+.saving-card h3 {
+    color: var(--primary-dark);
+    font-size: 17px;
+    margin-bottom: 12px;
+}
+
+.saving-card h2 {
+    color: var(--primary);
+    font-size: 29px;
+}
+
+/* PRINT */
+
+.print-section {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.print-section button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 15px 35px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.print-section button:hover {
+    background: var(--primary-dark);
+}
+
+/* FOOTER */
+
+footer {
+    background: #1f2937;
+    color: white;
+    padding: 25px;
+    text-align: center;
+    font-size: 13px;
+}
+
+footer p {
+    margin-bottom: 5px;
+}
+
+/* MOBILE */
+
+@media (max-width: 900px) {
+    .results-grid,
+    .savings-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .header {
+        padding: 25px 0;
+    }
+
+    .header h1 {
+        font-size: 24px;
+    }
+
+    .page-nav {
+        gap: 7px;
+    }
+
+    .nav-button {
+        font-size: 14px;
+        padding: 13px 5px;
+    }
+
+    .input-section,
+    .result-card {
+        padding: 20px;
+    }
+
+    .input-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-panel {
+        padding: 15px;
+    }
+
+    .result-card > h2 {
+        font-size: 27px;
+    }
+
+    .details p {
+        font-size: 12px;
+    }
+
+    .saving-card h2 {
+        font-size: 25px;
+    }
+}
+
+/* PRINT / SAVE PDF */
+
+@media print {
+    body {
+        background: white;
+    }
+
+    .header {
+        background: white !important;
+        color: black;
+        padding: 15px 0;
+    }
+
+    .page-nav,
+    .print-section {
+        display: none !important;
+    }
+
+    .calculator-page[hidden] {
+        display: none !important;
+    }
+
+    .input-section,
+    .result-card,
+    .saving-card {
+        box-shadow: none;
+    }
+
+    .result-card,
+    .saving-card {
+        break-inside: avoid;
+    }
+
+    .results-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .savings-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    footer {
+        background: white;
+        color: black;
+    }
+}
+
+
+这些是我的coding 现在我要你帮我就是那个晚上用60% 不是fixed的了 我要他是一个可以调节的 就是有时候可以50% 有时候可以60% 以此类推
