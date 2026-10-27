@@ -1,6 +1,6 @@
 
 // ==========================================
-// SKYWORTH SOLAR CALCULATOR v13
+// SKYWORTH SOLAR CALCULATOR v14
 // HOUSE / SHOP / FACTORY
 // ==========================================
 
@@ -8,7 +8,10 @@
 // CONFIGURATION
 // ==========================================
 
-const SOLAR_REMAINING_RATIO = 0.60;
+// Default remaining usage after solar: 60%
+// Each page can override this using its slider.
+const DEFAULT_NIGHT_PERCENTAGE = 60;
+
 const BATTERY_DEDUCTION_KWH = 450;
 const KWTBB_RATE = 0.016;
 
@@ -135,10 +138,80 @@ function savingCard(title, amount) {
     `;
 }
 
-function getRemainingUsage(usage, batteryCount) {
+// ==========================================
+// ADJUSTABLE NIGHT USAGE
+// ==========================================
+
+function getNightPercentage(page) {
+    const input = document.getElementById(
+        page + "Night"
+    );
+
+    if (!input || input.value.trim() === "") {
+        return DEFAULT_NIGHT_PERCENTAGE;
+    }
+
+    const value = Number(input.value);
+
+    if (!Number.isFinite(value)) {
+        return DEFAULT_NIGHT_PERCENTAGE;
+    }
+
     return Math.max(
         0,
-        usage * SOLAR_REMAINING_RATIO -
+        Math.min(100, value)
+    );
+}
+
+function updateNightUsage(page, source) {
+    const numberInput = document.getElementById(
+        page + "Night"
+    );
+
+    const slider = document.getElementById(
+        page + "NightSlider"
+    );
+
+    const sourceInput = source === "slider"
+        ? slider
+        : numberInput;
+
+    if (sourceInput.value.trim() === "") {
+        return;
+    }
+
+    const value = Math.max(
+        0,
+        Math.min(
+            100,
+            Number(sourceInput.value) || 0
+        )
+    );
+
+    numberInput.value = value;
+    slider.value = value;
+
+    if (page === "house") {
+        calculateAll();
+    } else if (page === "shop") {
+        calculateShop();
+    } else if (page === "factory") {
+        calculateFactory();
+    }
+}
+
+// ==========================================
+// REMAINING USAGE AFTER SOLAR
+// ==========================================
+
+function getRemainingUsage(
+    usage,
+    batteryCount,
+    nightPercentage = DEFAULT_NIGHT_PERCENTAGE
+) {
+    return Math.max(
+        0,
+        usage * (nightPercentage / 100) -
         batteryCount * BATTERY_DEDUCTION_KWH
     );
 }
@@ -335,7 +408,14 @@ function houseCard(title, subtitle, bill, solar) {
 function calculateAll() {
     const usage = numeric("jumlah");
 
-    const before = houseBill(usage, false);
+    const nightPercentage = getNightPercentage(
+        "house"
+    );
+
+    const before = houseBill(
+        usage,
+        false
+    );
 
     let results = houseCard(
         "Sebelum Pasang",
@@ -361,7 +441,8 @@ function calculateAll() {
     for (let count = 0; count <= 2; count++) {
         const remaining = getRemainingUsage(
             usage,
-            count
+            count,
+            nightPercentage
         );
 
         const after = houseBill(
@@ -441,11 +522,8 @@ function shopBill(usage, isSolar = false) {
     );
 
     // SHOP ATAP SALES SIMULATION
-    //
     // Sebelum ATAP - Tenaga = Selepas ATAP
-    //
     // Not an official TNB credit formula.
-    // Apply deduction to solar scenarios only.
 
     const atapCredit = isSolar
         ? Math.min(beforeATAP, tenaga)
@@ -540,6 +618,10 @@ function shopCard(title, subtitle, bill, solar) {
 function calculateShop() {
     const usage = numeric("shopUsage");
 
+    const nightPercentage = getNightPercentage(
+        "shop"
+    );
+
     const before = shopBill(
         usage,
         false
@@ -569,7 +651,8 @@ function calculateShop() {
     for (let count = 0; count <= 2; count++) {
         const remaining = getRemainingUsage(
             usage,
-            count
+            count,
+            nightPercentage
         );
 
         const after = shopBill(
@@ -832,6 +915,10 @@ function calculateFactory() {
         "factoryUsage"
     );
 
+    const nightPercentage = getNightPercentage(
+        "factory"
+    );
+
     const voltage = document.getElementById(
         "factoryVoltage"
     ).value;
@@ -903,7 +990,8 @@ function calculateFactory() {
     for (let count = 0; count <= 2; count++) {
         const remaining = getRemainingUsage(
             usage,
-            count
+            count,
+            nightPercentage
         );
 
         const after = factoryBill(
